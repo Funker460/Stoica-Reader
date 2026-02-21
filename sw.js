@@ -1,13 +1,10 @@
-const CACHE = 'stoica-v2';
-const ASSETS = [
-  './',
-  './index.html',
-];
+const CACHE = 'stoica-v3-1';
+const CORE = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache =>
-      Promise.allSettled(ASSETS.map(url => cache.add(url).catch(() => {})))
+    caches.open(CACHE).then(c =>
+      Promise.allSettled(CORE.map(url => c.add(url).catch(() => {})))
     )
   );
   self.skipWaiting();
@@ -23,19 +20,35 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // For cross-origin (CDN fonts/scripts), try network first
-  if (!e.request.url.startsWith(self.location.origin)) {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+  const url = e.request.url;
+  // Don't cache API calls or Netlify functions
+  if (url.includes('/.netlify/') || url.includes('api.anthropic.com')) {
+    e.respondWith(fetch(e.request));
     return;
   }
+  // For CDN resources: network first, cache fallback
+  if (!url.startsWith(self.location.origin)) {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+  // Local: stale-while-revalidate
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return res;
-      });
-    })
+    caches.open(CACHE).then(c =>
+      c.match(e.request).then(cached => {
+        const fresh = fetch(e.request).then(res => {
+          c.put(e.request, res.clone());
+          return res;
+        });
+        return cached || fresh;
+      })
+    )
   );
 });
