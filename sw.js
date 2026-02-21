@@ -1,17 +1,14 @@
-const CACHE = 'stoica-v1';
+const CACHE = 'stoica-v2';
 const ASSETS = [
   './',
   './index.html',
-  'https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => {
-      return Promise.allSettled(ASSETS.map(url => cache.add(url).catch(() => {})));
-    })
+    caches.open(CACHE).then(cache =>
+      Promise.allSettled(ASSETS.map(url => cache.add(url).catch(() => {})))
+    )
   );
   self.skipWaiting();
 });
@@ -26,7 +23,19 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // For cross-origin (CDN fonts/scripts), try network first
+  if (!e.request.url.startsWith(self.location.origin)) {
+    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+    return;
+  }
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).catch(() => cached))
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      });
+    })
   );
 });

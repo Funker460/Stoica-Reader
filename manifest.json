@@ -1,24 +1,14 @@
 {
   "name": "Stoica Reader",
   "short_name": "Stoica",
-  "description": "Lector personal con voz para PDF, TXT y texto pegado",
+  "description": "Lector personal inteligente con voz, traducción y análisis",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#1a1a2e",
+  "background_color": "#0d0d14",
+  "theme_color": "#0d0d14",
   "orientation": "any",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }

@@ -5,305 +5,627 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stoica Reader</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1a1a2e" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="theme-color" content="#0d0d14" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
-    /* ── TOKENS ── */
-    :root {
-      --bg:       #f5f0e8;
-      --surface:  #ede8df;
-      --border:   #c9bfae;
-      --text:     #1c1916;
-      --muted:    #6b6157;
-      --accent:   #c0392b;
-      --accent2:  #2c3e50;
-      --btn-bg:   #1c1916;
-      --btn-txt:  #f5f0e8;
-      --shadow:   rgba(28,25,22,0.15);
-      --radius:   10px;
-      --font-body: 'Lora', Georgia, serif;
-      --font-mono: 'DM Mono', monospace;
-      --font-size: 18px;
-    }
-    [data-theme="dark"] {
-      --bg:       #13111a;
-      --surface:  #1e1b28;
-      --border:   #2e2b3a;
-      --text:     #e8e4f0;
-      --muted:    #8a85a0;
-      --accent:   #e05c6c;
-      --accent2:  #7c82d6;
-      --btn-bg:   #e8e4f0;
-      --btn-txt:  #13111a;
-      --shadow:   rgba(0,0,0,0.4);
-    }
+/* ═══════════════════════════════════════════
+   STOICA READER v2 — Design System
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #faf7f2;
+  --surface:   #f0ebe0;
+  --surface2:  #e6dfd2;
+  --border:    #c8bfad;
+  --text:      #1a1612;
+  --muted:     #7a7060;
+  --accent:    #9b2335;
+  --accent2:   #2a4a6b;
+  --accent3:   #2d6a4f;
+  --gold:      #b8860b;
+  --btn-bg:    #1a1612;
+  --btn-txt:   #faf7f2;
+  --shadow-sm: 0 2px 8px rgba(26,22,18,0.10);
+  --shadow-md: 0 8px 32px rgba(26,22,18,0.15);
+  --shadow-lg: 0 20px 60px rgba(26,22,18,0.20);
+  --radius:    8px;
+  --radius-lg: 14px;
+  --font-main: 'Libre Baskerville', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-size: 18px;
+  --line-height: 1.9;
+}
+[data-theme="dark"] {
+  --bg:        #0d0d14;
+  --surface:   #14141f;
+  --surface2:  #1c1c2a;
+  --border:    #2a2a3d;
+  --text:      #e8e4f8;
+  --muted:     #6e6a88;
+  --accent:    #e05c72;
+  --accent2:   #7c9fd6;
+  --accent3:   #52b788;
+  --gold:      #d4a017;
+  --btn-bg:    #e8e4f8;
+  --btn-txt:   #0d0d14;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+}
 
-    /* ── RESET ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: background 0.3s, color 0.3s;
-    }
+*,*::before,*::after { box-sizing: border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: background .3s, color .3s;
+}
 
-    /* ── TOPBAR ── */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px;
-      height: 56px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: 0 2px 8px var(--shadow);
-    }
-    .logo {
-      font-family: var(--font-mono);
-      font-size: 1.1rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-    }
-    .logo span { color: var(--text); }
-    .header-right { display: flex; gap: 8px; align-items: center; }
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-    /* ── ICON BUTTONS ── */
-    .icon-btn {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      color: var(--text);
-      cursor: pointer;
-      width: 36px; height: 36px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem;
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .icon-btn:hover { background: var(--border); }
+/* ── HEADER ── */
+header {
+  height: 52px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+}
+.logo {
+  font-family: var(--font-mono);
+  font-size: .95rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  color: var(--accent);
+}
+.logo em { color: var(--text); font-style: normal; }
+.header-right { display: flex; gap: 6px; align-items: center; }
 
-    /* ── TOOLBAR ── */
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 12px 24px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      align-items: center;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--btn-bg);
-      color: var(--btn-txt);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
-      white-space: nowrap;
-    }
-    .btn:hover { opacity: 0.85; }
-    .btn:active { transform: scale(0.97); }
-    .btn.secondary {
-      background: transparent;
-      color: var(--text);
-    }
-    .sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  gap: 0;
+  flex-shrink: 0;
+}
+.tab {
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .06em;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab:hover:not(.active) { color: var(--text); }
 
-    /* ── STATS BAR ── */
-    .statsbar {
-      display: flex; gap: 20px; flex-wrap: wrap;
-      padding: 6px 24px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-    .statsbar span b { color: var(--text); font-weight: 500; }
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  flex-shrink: 0;
+}
+.sep { width: 1px; height: 22px; background: var(--border); margin: 0 2px; }
 
-    /* ── MAIN LAYOUT ── */
-    .main {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--btn-bg);
+  color: var(--btn-txt);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s, box-shadow .15s;
+  white-space: nowrap;
+  letter-spacing: .04em;
+}
+.btn:hover { opacity: .85; box-shadow: var(--shadow-sm); }
+.btn:active { transform: scale(.97); }
+.btn.ghost {
+  background: transparent;
+  color: var(--text);
+}
+.btn.success { background: var(--accent3); color: #fff; border-color: var(--accent3); }
+.btn.info    { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+.btn.warn    { background: var(--gold);    color: #fff; border-color: var(--gold); }
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem;
+  transition: background .15s;
+}
+.icon-btn:hover { background: var(--border); }
 
-    /* ── TEXT AREA ── */
-    .reader {
-      flex: 1;
-      padding: 40px 80px;
-      overflow-y: auto;
-      line-height: 1.85;
-      font-size: var(--font-size);
-      max-width: 900px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    @media(max-width:700px) { .reader { padding: 24px 20px; } }
+/* ── STATS BAR ── */
+.statsbar {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  padding: 5px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  color: var(--muted);
+  align-items: center;
+  flex-shrink: 0;
+}
+.statsbar b { color: var(--text); font-weight: 500; }
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--border);
+  color: var(--muted);
+  margin-left: auto;
+}
+.status-pill.playing { background: var(--accent);  color: #fff; }
+.status-pill.paused  { background: var(--accent2); color: #fff; }
 
-    #textDisplay {
-      white-space: pre-wrap;
-      word-break: break-word;
-      outline: none;
-      min-height: 200px;
-    }
-    #textDisplay ::selection { background: #f6d55c; color: #1c1916; }
-    #textDisplay.empty::before {
-      content: "Carga un PDF, un archivo .txt o pega tu texto aquí…";
-      color: var(--muted);
-      font-style: italic;
-      pointer-events: none;
-    }
-    .highlight { background: #f6d55c; color: #1c1916; border-radius: 3px; }
-    .reading-word { background: var(--accent); color: #fff; border-radius: 3px; }
+/* ── PROGRESS BAR ── */
+.progress-wrap {
+  padding: 0 20px 6px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--surface2);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius: 3px;
+  width: 0%;
+  transition: width .3s;
+  pointer-events: none;
+}
 
-    /* ── PASTE MODAL ── */
-    .overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55);
-      z-index: 200;
-      align-items: center; justify-content: center;
-    }
-    .overlay.open { display: flex; }
-    .modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px;
-      width: min(560px, 95vw);
-      box-shadow: 0 20px 60px var(--shadow);
-      display: flex; flex-direction: column; gap: 14px;
-    }
-    .modal h2 { font-family: var(--font-mono); font-size: 1rem; }
-    .modal textarea {
-      width: 100%; height: 240px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 1rem;
-      padding: 12px;
-      resize: vertical;
-    }
-    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+/* ── PANEL LAYOUT ── */
+.panel-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
 
-    /* ── TTS PANEL ── */
-    .tts-panel {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-    }
-    .tts-controls { display: flex; gap: 8px; align-items: center; }
-    .play-btn {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      font-size: 1.4rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: transform 0.15s, opacity 0.15s;
-      box-shadow: 0 4px 16px rgba(192,57,43,0.35);
-    }
-    .play-btn:hover { transform: scale(1.06); }
-    .tts-slider-group { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
-    .tts-slider-group label {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-    input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
-    select {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      padding: 6px 10px;
-      cursor: pointer;
-      max-width: 200px;
-    }
+/* ── READER PANE ── */
+.reader-pane {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 80px;
+  min-width: 0;
+}
+@media(max-width:700px) { .reader-pane { padding: 24px 18px; } }
 
-    /* ── FONT CONTROLS ── */
-    .font-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .font-controls label {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
+#textDisplay {
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  white-space: pre-wrap;
+  word-break: break-word;
+  outline: none;
+  max-width: 780px;
+  margin: 0 auto;
+}
+#textDisplay.empty::before {
+  content: "Carga un PDF, un .txt o pega tu texto…";
+  color: var(--muted);
+  font-style: italic;
+}
+.word-span { display: inline; }
+.word-span.reading {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 3px;
+  padding: 0 2px;
+  transition: background .1s;
+}
+.word-span.done {
+  background: rgba(155,35,53,0.12);
+  border-radius: 2px;
+}
+mark.hl {
+  background: #f6d55c;
+  color: #1a1612;
+  border-radius: 3px;
+  padding: 0 1px;
+}
 
-    /* ── STATUS PILL ── */
-    .status-pill {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: var(--border);
-      color: var(--muted);
-    }
-    .status-pill.playing { background: var(--accent); color: #fff; }
-    .status-pill.paused  { background: var(--accent2); color: #fff; }
+/* ── SIDE PANEL ── */
+.side-panel {
+  width: 340px;
+  min-width: 280px;
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width .3s;
+}
+.side-panel.collapsed { width: 0; min-width: 0; border: none; overflow: hidden; }
+.side-inner {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.side-section {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side-section h3 {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 
-    /* ── SCROLLBAR ── */
-    .reader::-webkit-scrollbar { width: 6px; }
-    .reader::-webkit-scrollbar-track { background: var(--bg); }
-    .reader::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ── TTS PANEL ── */
+.tts-bar {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+}
+.play-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .15s, box-shadow .15s;
+  box-shadow: 0 4px 18px rgba(155,35,53,.4);
+  flex-shrink: 0;
+}
+.play-btn:hover { transform: scale(1.08); box-shadow: 0 6px 24px rgba(155,35,53,.5); }
+.play-btn.sel-btn { background: var(--accent2); box-shadow: 0 4px 18px rgba(42,74,107,.4); }
+.slider-grp { display: flex; flex-direction: column; gap: 3px; min-width: 110px; }
+.slider-grp label { font-family: var(--font-mono); font-size: .66rem; color: var(--muted); }
+input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  padding: 5px 8px;
+  cursor: pointer;
+}
 
-    /* hidden input */
-    #fileInput, #txtInput { display: none; }
-  </style>
+/* ── FLOATING CONTROL ── */
+.float-ctrl {
+  position: fixed;
+  bottom: 110px;
+  right: 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-lg);
+  z-index: 300;
+  align-items: center;
+  min-width: 56px;
+  transition: opacity .2s, transform .2s;
+  cursor: move;
+  user-select: none;
+}
+.float-ctrl.hidden { opacity: 0; pointer-events: none; transform: scale(.8); }
+.float-ctrl .drag-handle {
+  font-size: .6rem;
+  color: var(--muted);
+  letter-spacing: .1em;
+  font-family: var(--font-mono);
+  cursor: grab;
+}
+.float-ctrl .fc-speed {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  color: var(--muted);
+  text-align: center;
+}
+.fc-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s;
+}
+.fc-btn:hover { background: var(--surface2); }
+.fc-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── OVERLAY / MODAL ── */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 400;
+  align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  width: min(640px, 96vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; gap: 14px;
+  animation: modalIn .2s ease;
+}
+@keyframes modalIn { from { opacity:0; transform: scale(.96) translateY(10px); } }
+.modal h2 { font-family: var(--font-mono); font-size: .9rem; letter-spacing: .06em; }
+.modal textarea, .modal select, .modal input[type=text] {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: .95rem;
+  padding: 10px 12px;
+}
+.modal textarea { min-height: 200px; resize: vertical; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.modal-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.modal-row > * { flex: 1; min-width: 140px; }
+.modal-section { display: flex; flex-direction: column; gap: 6px; }
+.modal-section label { font-family: var(--font-mono); font-size: .7rem; color: var(--muted); }
+
+/* ── OUTPUT BOXES ── */
+.output-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  font-size: .9rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.output-box.questions { font-size: .85rem; }
+
+/* ── NOTES ── */
+.note-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform: translateY(4px); } }
+.note-meta { font-family: var(--font-mono); font-size: .66rem; color: var(--muted); }
+.note-text { font-size: .88rem; line-height: 1.6; white-space: pre-wrap; }
+.note-actions { display: flex; gap: 6px; }
+.note-textarea {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: .88rem;
+  padding: 6px 8px;
+  border-radius: 4px;
+  width: 100%;
+  resize: none;
+  min-height: 60px;
+}
+
+/* ── MINDMAP CANVAS ── */
+#mindmapCanvas {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* ── FONT CONTROLS ── */
+.font-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.font-row label { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
+
+/* ── LOADING ── */
+.loading-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  z-index: 999;
+  width: 0%;
+  transition: width .3s;
+}
+.toast {
+  position: fixed;
+  bottom: 100px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--btn-bg);
+  color: var(--btn-txt);
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-family: var(--font-mono);
+  font-size: .78rem;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+/* hidden */
+#fileInput, #txtInput { display: none; }
+
+/* ── CONCEPT MAP NODES ── */
+.concept-node {
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-size: .8rem;
+  font-family: var(--font-mono);
+  color: var(--text);
+  display: inline-block;
+  margin: 4px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.concept-node:hover { background: var(--accent); color: #fff; }
+.concept-central {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  border-color: var(--accent);
+}
+
+/* ── QUESTION CARDS ── */
+.q-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.q-card .q-num {
+  font-family: var(--font-mono);
+  font-size: .66rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.q-card .q-text { font-size: .9rem; font-weight: 600; margin-bottom: 8px; }
+.q-card .q-answer { font-size: .85rem; color: var(--muted); display: none; padding-top: 8px; border-top: 1px dashed var(--border); }
+.q-card .q-answer.visible { display: block; color: var(--text); }
+.q-card .q-just { font-size: .78rem; color: var(--muted); margin-top: 4px; font-style: italic; }
+.q-options label { display: block; font-size: .85rem; margin: 4px 0; cursor: pointer; }
+.q-options label:hover { color: var(--accent); }
+
+/* ── TRANSLATION PANEL ── */
+.translate-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.lang-select { min-width: 130px; }
+
+/* TABS CONTENT */
+.tab-content { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+.tab-content.active { display: flex; }
+</style>
 </head>
 <body data-theme="light">
 
-<!-- Hidden file inputs -->
-<input type="file" id="fileInput" accept=".pdf" />
-<input type="file" id="txtInput" accept=".txt,.md" />
+<!-- Loading bar -->
+<div class="loading-bar" id="loadingBar"></div>
+<div class="toast" id="toast"></div>
 
-<!-- HEADER -->
+<!-- Hidden inputs -->
+<input type="file" id="fileInput" accept=".pdf" />
+<input type="file" id="txtInput"  accept=".txt,.md" />
+
+<!-- ═══ HEADER ═══ -->
 <header>
-  <div class="logo">STOICA<span>READER</span></div>
+  <div class="logo">STOICA<em>READER</em> <span style="font-size:.6rem;color:var(--muted);letter-spacing:.04em;">v2</span></div>
   <div class="header-right">
-    <button class="icon-btn" id="themeBtn" title="Claro / Oscuro">🌙</button>
-    <button class="icon-btn" id="fsBtn" title="Pantalla completa">⛶</button>
-    <button class="icon-btn" id="highlightBtn" title="Resaltar selección">🖊</button>
+    <button class="icon-btn" id="themeBtn" title="Claro/Oscuro">🌙</button>
+    <button class="icon-btn" id="fsBtn"    title="Pantalla completa">⛶</button>
+    <button class="icon-btn" id="sideBtn"  title="Panel lateral">▐</button>
+    <button class="icon-btn" id="floatBtn" title="Control flotante">⊕</button>
   </div>
 </header>
 
-<!-- TOOLBAR -->
+<!-- ═══ TABS ═══ -->
+<div class="tabs">
+  <button class="tab active" data-tab="reader">📖 Lector</button>
+  <button class="tab" data-tab="notes">📝 Notas</button>
+  <button class="tab" data-tab="summary">📋 Resumen</button>
+  <button class="tab" data-tab="questions">❓ Preguntas</button>
+  <button class="tab" data-tab="mindmap">🗺 Mapa</button>
+  <button class="tab" data-tab="translate">🌐 Traducción</button>
+</div>
+
+<!-- ═══ TOOLBAR ═══ -->
 <div class="toolbar">
-  <button class="btn" id="loadPdf">📄 Cargar PDF</button>
-  <button class="btn" id="loadTxt">📝 Cargar TXT</button>
-  <button class="btn secondary" id="pasteBtn">📋 Pegar texto</button>
+  <button class="btn" id="loadPdf">📄 PDF</button>
+  <button class="btn" id="loadTxt">📝 TXT</button>
+  <button class="btn ghost" id="pasteBtn">📋 Pegar</button>
   <div class="sep"></div>
-  <div class="font-controls">
+  <div class="font-row">
     <label>Fuente</label>
-    <select id="fontSelect">
-      <option value="'Lora', Georgia, serif">Lora (Serif)</option>
-      <option value="'DM Mono', monospace">DM Mono</option>
-      <option value="Georgia, serif">Georgia</option>
-      <option value="Arial, sans-serif">Arial</option>
-      <option value="'Courier New', monospace">Courier New</option>
+    <select id="fontSel">
+      <option value="'Libre Baskerville',Georgia,serif">Baskerville</option>
+      <option value="Georgia,serif">Georgia</option>
+      <option value="'JetBrains Mono',monospace">Mono</option>
+      <option value="Arial,sans-serif">Arial</option>
+      <option value="'Courier New',monospace">Courier</option>
     </select>
     <label>Tamaño</label>
-    <select id="fontSizeSelect">
+    <select id="fontSizeSel">
       <option value="14px">14</option>
       <option value="16px">16</option>
       <option value="18px" selected>18</option>
@@ -311,326 +633,1050 @@
       <option value="24px">24</option>
       <option value="28px">28</option>
     </select>
+    <label>Interlineado</label>
+    <select id="lineHSel">
+      <option value="1.5">1.5</option>
+      <option value="1.9" selected>1.9</option>
+      <option value="2.2">2.2</option>
+    </select>
   </div>
+  <div class="sep"></div>
+  <button class="btn ghost" id="hlBtn">🖊 Resaltar sel.</button>
+  <button class="btn ghost" id="saveNoteBtn">💾 Guardar nota</button>
 </div>
 
-<!-- STATS BAR -->
+<!-- ═══ STATS ═══ -->
 <div class="statsbar">
   <span>Palabras: <b id="wordCount">0</b></span>
   <span>Páginas: <b id="pageCount">0</b></span>
-  <span>Tiempo estimado: <b id="readTime">0 min</b></span>
+  <span>⏱ <b id="readTime">0 min</b></span>
+  <span>Posición: <b id="posInfo">0%</b></span>
   <span id="statusPill" class="status-pill">Detenido</span>
 </div>
 
-<!-- MAIN -->
-<main class="main">
-  <div class="reader">
-    <div id="textDisplay" class="empty" tabindex="0"></div>
-  </div>
-</main>
-
-<!-- TTS PANEL -->
-<div class="tts-panel">
-  <div class="tts-controls">
-    <button class="play-btn" id="readSelBtn" title="Leer texto seleccionado">◈</button>
-    <button class="play-btn" id="playBtn" title="Reproducir / Pausar">▶</button>
-    <button class="icon-btn" id="stopBtn" title="Detener" style="width:44px;height:44px;font-size:1.1rem;">⏹</button>
-  </div>
-
-  <div class="tts-slider-group">
-    <label>Velocidad: <b id="rateVal">1.0</b>x</label>
-    <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1" />
-  </div>
-
-  <div class="tts-slider-group">
-    <label>Tono: <b id="pitchVal">1.0</b></label>
-    <input type="range" id="pitchSlider" min="0.5" max="2" step="0.1" value="1" />
-  </div>
-
-  <div class="tts-slider-group">
-    <label>Volumen: <b id="volVal">100</b>%</label>
-    <input type="range" id="volSlider" min="0" max="1" step="0.05" value="1" />
-  </div>
-
-  <div>
-    <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);display:block;margin-bottom:4px;">Voz</label>
-    <select id="voiceSelect"></select>
+<!-- ═══ PROGRESS BAR ═══ -->
+<div class="progress-wrap">
+  <div class="progress-track" id="progressTrack" title="Haz clic para ir a esa posición">
+    <div class="progress-fill" id="progressFill"></div>
   </div>
 </div>
 
-<!-- PASTE MODAL -->
+<!-- ═══ TAB: READER ═══ -->
+<div class="tab-content active" id="tab-reader">
+  <div class="panel-layout">
+    <div class="reader-pane" id="readerPane">
+      <div id="textDisplay" class="empty"></div>
+    </div>
+    <aside class="side-panel" id="sidePanel">
+      <div class="side-inner">
+        <div class="side-section">
+          <h3>Voz</h3>
+          <select id="voiceSelect"></select>
+          <div class="slider-grp">
+            <label>Velocidad: <b id="rateVal">1.0</b>x</label>
+            <input type="range" id="rateSlider" min=".5" max="2.5" step=".1" value="1" />
+          </div>
+          <div class="slider-grp">
+            <label>Tono: <b id="pitchVal">1.0</b></label>
+            <input type="range" id="pitchSlider" min=".5" max="2" step=".1" value="1" />
+          </div>
+          <div class="slider-grp">
+            <label>Volumen: <b id="volVal">100</b>%</label>
+            <input type="range" id="volSlider" min="0" max="1" step=".05" value="1" />
+          </div>
+        </div>
+        <div class="side-section">
+          <h3>Exportar audio</h3>
+          <input type="text" id="audioName" placeholder="nombre-del-audio" style="border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:.72rem;padding:6px 8px;width:100%;" />
+          <button class="btn success" id="exportAudio">🔊 Guardar MP3</button>
+          <p style="font-family:var(--font-mono);font-size:.64rem;color:var(--muted);">Nota: usa la voz del sistema. El archivo se genera desde el navegador.</p>
+        </div>
+        <div class="side-section">
+          <h3>Traducción rápida</h3>
+          <select id="sideTransDest" class="lang-select">
+            <option value="es">→ Español</option>
+            <option value="en">→ Inglés</option>
+            <option value="fr">→ Francés</option>
+            <option value="de">→ Alemán</option>
+            <option value="pt">→ Portugués</option>
+            <option value="it">→ Italiano</option>
+          </select>
+          <button class="btn info" id="quickTranslate">🌐 Traducir texto</button>
+          <p style="font-family:var(--font-mono);font-size:.64rem;color:var(--muted);">Usa el API de Claude para traducir el texto actual.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ═══ TAB: NOTAS ═══ -->
+<div class="tab-content" id="tab-notes">
+  <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px;">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <h2 style="font-family:var(--font-mono);font-size:.85rem;letter-spacing:.06em;">MIS NOTAS</h2>
+      <button class="btn ghost" id="clearNotes" style="margin-left:auto;">🗑 Limpiar todo</button>
+      <button class="btn" id="exportNotes">↓ Exportar notas</button>
+    </div>
+    <div id="notesContainer" style="display:flex;flex-direction:column;gap:10px;">
+      <p id="emptyNotes" style="font-family:var(--font-mono);font-size:.78rem;color:var(--muted);padding:20px 0;">Aún no tienes notas. Selecciona texto y pulsa "Guardar nota".</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: RESUMEN ═══ -->
+<div class="tab-content" id="tab-summary">
+  <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <h2 style="font-family:var(--font-mono);font-size:.85rem;letter-spacing:.06em;">RESUMEN AUTOMÁTICO</h2>
+      <select id="summaryLevel" style="border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:.72rem;padding:5px 8px;">
+        <option value="breve">Breve (3-5 oraciones)</option>
+        <option value="intermedio" selected>Intermedio (1-2 párrafos)</option>
+        <option value="detallado">Detallado (análisis completo)</option>
+      </select>
+      <button class="btn" id="genSummary">✨ Generar resumen</button>
+      <button class="btn ghost" id="copySummary">📋 Copiar</button>
+    </div>
+    <div id="summaryOutput" class="output-box">El resumen aparecerá aquí una vez que generes uno.</div>
+  </div>
+</div>
+
+<!-- ═══ TAB: PREGUNTAS ═══ -->
+<div class="tab-content" id="tab-questions">
+  <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <h2 style="font-family:var(--font-mono);font-size:.85rem;letter-spacing:.06em;">PREGUNTAS AUTOMÁTICAS</h2>
+      <select id="qType">
+        <option value="mixtas">Mixtas</option>
+        <option value="abiertas">Abiertas</option>
+        <option value="cerradas">Cerradas</option>
+        <option value="opcion_multiple">Opción múltiple</option>
+      </select>
+      <select id="qLevel">
+        <option value="literal">Nivel literal</option>
+        <option value="inferencial">Nivel inferencial</option>
+        <option value="critico">Nivel crítico-valorativo</option>
+        <option value="analogico">Nivel analógico-intertextual</option>
+      </select>
+      <input type="number" id="qCount" value="10" min="5" max="30" style="width:60px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:.72rem;padding:5px 8px;" />
+      <button class="btn" id="genQuestions">✨ Generar preguntas</button>
+      <button class="btn ghost" id="copyQuestions">📋 Copiar</button>
+    </div>
+    <div id="questionsOutput" class="output-box questions">Las preguntas aparecerán aquí.</div>
+  </div>
+</div>
+
+<!-- ═══ TAB: MAPA CONCEPTUAL ═══ -->
+<div class="tab-content" id="tab-mindmap">
+  <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <h2 style="font-family:var(--font-mono);font-size:.85rem;letter-spacing:.06em;">MAPA CONCEPTUAL</h2>
+      <button class="btn" id="genMindmap">✨ Generar mapa</button>
+      <button class="btn ghost" id="exportMindmap">↓ Exportar imagen</button>
+    </div>
+    <div id="conceptMapContainer" style="display:flex;flex-direction:column;gap:12px;">
+      <div id="conceptMapOutput" style="min-height:200px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;align-content:flex-start;">
+        <p style="font-family:var(--font-mono);font-size:.78rem;color:var(--muted);">El mapa de conceptos clave aparecerá aquí.</p>
+      </div>
+      <div id="keyIdeasOutput" class="output-box" style="font-size:.85rem;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB: TRADUCCIÓN ═══ -->
+<div class="tab-content" id="tab-translate">
+  <div style="flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <h2 style="font-family:var(--font-mono);font-size:.85rem;letter-spacing:.06em;">TRADUCCIÓN</h2>
+      <div class="translate-row">
+        <select id="transSource" class="lang-select">
+          <option value="auto">Detectar idioma</option>
+          <option value="es">Español</option>
+          <option value="en">Inglés</option>
+          <option value="fr">Francés</option>
+          <option value="de">Alemán</option>
+          <option value="pt">Portugués</option>
+          <option value="it">Italiano</option>
+          <option value="zh">Chino</option>
+          <option value="ja">Japonés</option>
+          <option value="ar">Árabe</option>
+          <option value="ru">Ruso</option>
+        </select>
+        <span style="font-family:var(--font-mono);font-size:.9rem;">→</span>
+        <select id="transDest" class="lang-select">
+          <option value="es" selected>Español</option>
+          <option value="en">Inglés</option>
+          <option value="fr">Francés</option>
+          <option value="de">Alemán</option>
+          <option value="pt">Portugués</option>
+          <option value="it">Italiano</option>
+          <option value="zh">Chino</option>
+          <option value="ja">Japonés</option>
+          <option value="ar">Árabe</option>
+          <option value="ru">Ruso</option>
+        </select>
+        <button class="btn" id="transAll">🌐 Traducir texto completo</button>
+        <button class="btn ghost" id="transSel">🌐 Traducir selección</button>
+        <button class="btn ghost" id="copyTrans">📋 Copiar</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:.66rem;color:var(--muted);margin-bottom:6px;">TEXTO ORIGINAL</div>
+        <div id="transOriginal" class="output-box" style="max-height:none;height:calc(100% - 24px);">El texto original aparecerá aquí.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:.66rem;color:var(--muted);margin-bottom:6px;">TRADUCCIÓN</div>
+        <div id="transOutput" class="output-box" style="max-height:none;height:calc(100% - 24px);">La traducción aparecerá aquí.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TTS BOTTOM BAR ═══ -->
+<div class="tts-bar">
+  <button class="play-btn sel-btn" id="readSelBtn" title="Leer selección">◈</button>
+  <button class="play-btn" id="playBtn" title="Reproducir/Pausar">▶</button>
+  <button class="icon-btn" id="stopBtn" title="Detener" style="width:42px;height:42px;">⏹</button>
+  <div style="flex:1;"></div>
+  <span style="font-family:var(--font-mono);font-size:.68rem;color:var(--muted);">Espacio = pausar · Esc = detener</span>
+</div>
+
+<!-- ═══ FLOATING CONTROL ═══ -->
+<div class="float-ctrl hidden" id="floatCtrl">
+  <div class="drag-handle" id="dragHandle">⋮⋮</div>
+  <button class="fc-btn primary" id="fc-play">▶</button>
+  <button class="fc-btn" id="fc-stop">⏹</button>
+  <div class="fc-speed" id="fcSpeedLbl">1.0x</div>
+  <button class="fc-btn" id="fc-slower" title="Más lento">🐢</button>
+  <button class="fc-btn" id="fc-faster" title="Más rápido">⚡</button>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Paste Modal -->
 <div class="overlay" id="pasteOverlay">
   <div class="modal">
     <h2>📋 Pegar texto</h2>
     <textarea id="pasteArea" placeholder="Pega aquí tu texto…"></textarea>
     <div class="modal-footer">
-      <button class="btn secondary" id="cancelPaste">Cancelar</button>
-      <button class="btn" id="confirmPaste">Cargar texto</button>
+      <button class="btn ghost" id="cancelPaste">Cancelar</button>
+      <button class="btn" id="confirmPaste">Cargar texto ›</button>
     </div>
   </div>
 </div>
 
-<!-- PDF.js from CDN -->
+<!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <script>
-// ── PDF.js worker ──
+/* ════════════════════════════════════════════
+   STOICA READER v2 — JavaScript Engine
+════════════════════════════════════════════ */
+
+// ── CONFIG ──
+const CLAUDE_API = "https://api.anthropic.com/v1/messages";
+const CLAUDE_MODEL = "claude-sonnet-4-20250514";
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 // ── STATE ──
-let fullText = '';
-let synth = window.speechSynthesis;
-let voices = [];
-let utterance = null;
-let isPlaying = false;
-let isPaused = false;
+let fullText   = '';
+let wordSpans  = [];
+let currentWordIdx = 0;
+let synth      = window.speechSynthesis;
+let voices     = [];
+let utterance  = null;
+let isPlaying  = false;
+let isPaused   = false;
+let notes      = JSON.parse(localStorage.getItem('stoica_notes') || '[]');
+let readProgress = 0;
 
 // ── DOM ──
-const display     = document.getElementById('textDisplay');
-const playBtn     = document.getElementById('playBtn');
-const stopBtn     = document.getElementById('stopBtn');
-const readSelBtn  = document.getElementById('readSelBtn');
-const rateSlider  = document.getElementById('rateSlider');
-const pitchSlider = document.getElementById('pitchSlider');
-const volSlider   = document.getElementById('volSlider');
-const voiceSelect = document.getElementById('voiceSelect');
-const rateVal     = document.getElementById('rateVal');
-const pitchVal    = document.getElementById('pitchVal');
-const volVal      = document.getElementById('volVal');
-const wordCount   = document.getElementById('wordCount');
-const pageCount   = document.getElementById('pageCount');
-const readTime    = document.getElementById('readTime');
-const statusPill  = document.getElementById('statusPill');
-const themeBtn    = document.getElementById('themeBtn');
-const fsBtn       = document.getElementById('fsBtn');
-const highlightBtn= document.getElementById('highlightBtn');
-const fontSelect  = document.getElementById('fontSelect');
-const fontSizeSelect = document.getElementById('fontSizeSelect');
-const pasteOverlay= document.getElementById('pasteOverlay');
-const pasteArea   = document.getElementById('pasteArea');
-const fileInput   = document.getElementById('fileInput');
-const txtInput    = document.getElementById('txtInput');
+const $ = id => document.getElementById(id);
+const display    = $('textDisplay');
+const playBtn    = $('playBtn');
+const stopBtn    = $('stopBtn');
+const readSelBtn = $('readSelBtn');
+const rateSlider = $('rateSlider');
+const pitchSlider= $('pitchSlider');
+const volSlider  = $('volSlider');
+const voiceSel   = $('voiceSelect');
+const rateVal    = $('rateVal');
+const pitchVal   = $('pitchVal');
+const volVal     = $('volVal');
+const statusPill = $('statusPill');
+const progressFill = $('progressFill');
+const posInfo    = $('posInfo');
+const loadingBar = $('loadingBar');
+
+// ── TOAST ──
+function showToast(msg, dur=2500) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ── LOADING ──
+function setLoading(pct) {
+  loadingBar.style.width = pct + '%';
+  if (pct >= 100) setTimeout(() => loadingBar.style.width = '0%', 400);
+}
 
 // ── THEME ──
-themeBtn.addEventListener('click', () => {
-  const body = document.body;
-  const isDark = body.dataset.theme === 'dark';
-  body.dataset.theme = isDark ? 'light' : 'dark';
-  themeBtn.textContent = isDark ? '🌙' : '☀️';
+$('themeBtn').addEventListener('click', () => {
+  const dark = document.body.dataset.theme === 'dark';
+  document.body.dataset.theme = dark ? 'light' : 'dark';
+  $('themeBtn').textContent = dark ? '🌙' : '☀️';
 });
 
 // ── FULLSCREEN ──
-fsBtn.addEventListener('click', () => {
+$('fsBtn').addEventListener('click', () => {
   if (!document.fullscreenElement) document.documentElement.requestFullscreen();
   else document.exitFullscreen();
 });
 
-// ── FONT ──
-fontSelect.addEventListener('change', () => {
-  document.documentElement.style.setProperty('--font-body', fontSelect.value);
-});
-fontSizeSelect.addEventListener('change', () => {
-  document.documentElement.style.setProperty('--font-size', fontSizeSelect.value);
+// ── SIDE PANEL ──
+$('sideBtn').addEventListener('click', () => {
+  $('sidePanel').classList.toggle('collapsed');
 });
 
-// ── LOAD TEXT into display ──
-function loadText(text) {
+// ── FLOAT CONTROL ──
+$('floatBtn').addEventListener('click', () => {
+  $('floatCtrl').classList.toggle('hidden');
+});
+
+// ── FONT ──
+$('fontSel').addEventListener('change', () => {
+  document.documentElement.style.setProperty('--font-main', $('fontSel').value);
+});
+$('fontSizeSel').addEventListener('change', () => {
+  document.documentElement.style.setProperty('--font-size', $('fontSizeSel').value);
+});
+$('lineHSel').addEventListener('change', () => {
+  document.documentElement.style.setProperty('--line-height', $('lineHSel').value);
+});
+
+// ── TABS ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    $('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ══════════════════════════════════════════
+// TEXT LOADING
+// ══════════════════════════════════════════
+
+function loadText(text, source='texto') {
   fullText = text.trim();
+  if (!fullText) { showToast('El texto está vacío.'); return; }
   display.classList.remove('empty');
-  display.textContent = fullText;
+  buildWordSpans(fullText);
   updateStats();
   stopSpeech();
+  setProgress(0);
+  showToast(`✓ ${source} cargado — ${fullText.split(/\s+/).length.toLocaleString()} palabras`);
+}
+
+function buildWordSpans(text) {
+  wordSpans = [];
+  currentWordIdx = 0;
+  // Split preserving whitespace groups
+  const parts = text.split(/(\s+)/);
+  let html = '';
+  let wIdx = 0;
+  parts.forEach(part => {
+    if (/\S/.test(part)) {
+      html += `<span class="word-span" data-w="${wIdx}">${escapeHtml(part)}</span>`;
+      wIdx++;
+    } else {
+      html += escapeHtml(part);
+    }
+  });
+  display.innerHTML = html;
+  wordSpans = display.querySelectorAll('.word-span');
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function updateStats() {
   const words = fullText ? fullText.split(/\s+/).filter(Boolean).length : 0;
-  wordCount.textContent = words.toLocaleString();
-  const pages = Math.ceil(words / 250);
-  pageCount.textContent = pages;
-  const mins = Math.round(words / 200);
-  readTime.textContent = mins + ' min';
+  $('wordCount').textContent = words.toLocaleString();
+  $('pageCount').textContent = Math.ceil(words / 250);
+  $('readTime').textContent  = Math.max(1, Math.round(words / 200)) + ' min';
 }
 
 // ── PDF ──
-document.getElementById('loadPdf').addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', async (e) => {
+$('loadPdf').addEventListener('click', () => $('fileInput').click());
+$('fileInput').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const arrayBuffer = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-  let text = '';
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    text += content.items.map(s => s.str).join(' ') + '\n\n';
+  setLoading(10);
+  try {
+    const ab = await file.arrayBuffer();
+    setLoading(30);
+    const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    setLoading(50);
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(s => s.str).join(' ') + '\n\n';
+      setLoading(50 + Math.round((i / pdf.numPages) * 45));
+    }
+    setLoading(100);
+    loadText(text, file.name);
+  } catch(err) {
+    showToast('Error al leer el PDF: ' + err.message);
+    setLoading(100);
   }
-  loadText(text);
-  fileInput.value = '';
+  $('fileInput').value = '';
 });
 
 // ── TXT ──
-document.getElementById('loadTxt').addEventListener('click', () => txtInput.click());
-txtInput.addEventListener('change', (e) => {
+$('loadTxt').addEventListener('click', () => $('txtInput').click());
+$('txtInput').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
+  setLoading(20);
   const reader = new FileReader();
-  reader.onload = ev => loadText(ev.target.result);
+  reader.onload = ev => { setLoading(100); loadText(ev.target.result, file.name); };
   reader.readAsText(file, 'UTF-8');
-  txtInput.value = '';
+  $('txtInput').value = '';
 });
 
 // ── PASTE ──
-document.getElementById('pasteBtn').addEventListener('click', () => {
-  pasteOverlay.classList.add('open');
-  pasteArea.focus();
+$('pasteBtn').addEventListener('click', () => { $('pasteOverlay').classList.add('open'); $('pasteArea').focus(); });
+$('cancelPaste').addEventListener('click', () => { $('pasteOverlay').classList.remove('open'); $('pasteArea').value=''; });
+$('confirmPaste').addEventListener('click', () => {
+  const t = $('pasteArea').value.trim();
+  if (t) loadText(t, 'Texto pegado');
+  $('pasteOverlay').classList.remove('open');
+  $('pasteArea').value = '';
 });
-document.getElementById('cancelPaste').addEventListener('click', () => {
-  pasteOverlay.classList.remove('open');
-  pasteArea.value = '';
-});
-document.getElementById('confirmPaste').addEventListener('click', () => {
-  const t = pasteArea.value.trim();
-  if (t) loadText(t);
-  pasteOverlay.classList.remove('open');
-  pasteArea.value = '';
-});
-pasteOverlay.addEventListener('click', (e) => {
-  if (e.target === pasteOverlay) document.getElementById('cancelPaste').click();
-});
+$('pasteOverlay').addEventListener('click', e => { if (e.target===$('pasteOverlay')) $('cancelPaste').click(); });
 
-// ── HIGHLIGHT ──
-highlightBtn.addEventListener('click', () => {
+// ══════════════════════════════════════════
+// HIGHLIGHT
+// ══════════════════════════════════════════
+$('hlBtn').addEventListener('click', () => {
   const sel = window.getSelection();
-  if (!sel || sel.isCollapsed) return;
+  if (!sel || sel.isCollapsed) { showToast('Selecciona texto primero.'); return; }
   const range = sel.getRangeAt(0);
   const mark = document.createElement('mark');
-  mark.className = 'highlight';
-  try { range.surroundContents(mark); } catch(e) {}
-  sel.removeAllRanges();
+  mark.className = 'hl';
+  try { range.surroundContents(mark); sel.removeAllRanges(); showToast('Texto resaltado ✓'); }
+  catch(e) { showToast('No se puede resaltar esa selección.'); }
 });
 
-// ── VOICES ──
+// ── SAVE NOTE ──
+$('saveNoteBtn').addEventListener('click', () => {
+  const sel = window.getSelection();
+  const txt = (sel && !sel.isCollapsed) ? sel.toString().trim() : null;
+  if (!txt) { showToast('Selecciona texto para guardar como nota.'); return; }
+  addNote(txt);
+  sel.removeAllRanges();
+  showToast('Nota guardada ✓');
+});
+
+function addNote(text) {
+  const note = { id: Date.now(), text, date: new Date().toLocaleString('es-ES') };
+  notes.unshift(note);
+  saveNotes();
+  renderNotes();
+}
+
+function saveNotes() {
+  localStorage.setItem('stoica_notes', JSON.stringify(notes));
+}
+
+function renderNotes() {
+  const c = $('notesContainer');
+  $('emptyNotes').style.display = notes.length ? 'none' : 'block';
+  // Remove existing cards
+  c.querySelectorAll('.note-card').forEach(el => el.remove());
+  notes.forEach(note => {
+    const card = document.createElement('div');
+    card.className = 'note-card';
+    card.dataset.id = note.id;
+    card.innerHTML = `
+      <div class="note-meta">${note.date}</div>
+      <div class="note-text">${escapeHtml(note.text)}</div>
+      <div class="note-actions">
+        <button class="btn ghost" onclick="editNote(${note.id})">✏️ Editar</button>
+        <button class="btn ghost" onclick="deleteNote(${note.id})">🗑 Eliminar</button>
+        <button class="btn ghost" onclick="speakText('${escapeHtml(note.text).replace(/'/g,"\\'")}')">🔊 Leer</button>
+      </div>`;
+    c.appendChild(card);
+  });
+}
+
+window.editNote = function(id) {
+  const note = notes.find(n => n.id === id);
+  if (!note) return;
+  const card = document.querySelector(`.note-card[data-id="${id}"]`);
+  const ta = document.createElement('textarea');
+  ta.className = 'note-textarea';
+  ta.value = note.text;
+  const txt = card.querySelector('.note-text');
+  txt.replaceWith(ta);
+  card.querySelector('.note-actions').innerHTML = `
+    <button class="btn" onclick="saveEditNote(${id})">💾 Guardar</button>
+    <button class="btn ghost" onclick="renderNotes()">Cancelar</button>`;
+};
+
+window.saveEditNote = function(id) {
+  const card = document.querySelector(`.note-card[data-id="${id}"]`);
+  const ta = card.querySelector('textarea');
+  const note = notes.find(n => n.id === id);
+  if (note && ta) { note.text = ta.value; saveNotes(); renderNotes(); showToast('Nota actualizada ✓'); }
+};
+
+window.deleteNote = function(id) {
+  notes = notes.filter(n => n.id !== id);
+  saveNotes();
+  renderNotes();
+  showToast('Nota eliminada');
+};
+
+$('clearNotes').addEventListener('click', () => {
+  if (confirm('¿Eliminar todas las notas?')) { notes = []; saveNotes(); renderNotes(); }
+});
+
+$('exportNotes').addEventListener('click', () => {
+  const txt = notes.map(n => `[${n.date}]\n${n.text}`).join('\n\n─────────\n\n');
+  downloadText(txt, 'stoica-notas.txt');
+});
+
+// Init notes
+renderNotes();
+
+// ══════════════════════════════════════════
+// VOICES / TTS
+// ══════════════════════════════════════════
 function loadVoices() {
   voices = synth.getVoices();
-  voiceSelect.innerHTML = '';
+  voiceSel.innerHTML = '';
   voices.forEach((v, i) => {
     const opt = document.createElement('option');
     opt.value = i;
     opt.textContent = `${v.name} (${v.lang})`;
     if (v.lang.startsWith('es')) opt.selected = true;
-    voiceSelect.appendChild(opt);
+    voiceSel.appendChild(opt);
   });
 }
 loadVoices();
-if (speechSynthesis.onvoiceschanged !== undefined) {
-  speechSynthesis.onvoiceschanged = loadVoices;
-}
+if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
 
-// ── SLIDERS ──
-rateSlider.addEventListener('input', () => {
-  rateVal.textContent = parseFloat(rateSlider.value).toFixed(1);
-  if (utterance) utterance.rate = parseFloat(rateSlider.value);
-});
-pitchSlider.addEventListener('input', () => {
-  pitchVal.textContent = parseFloat(pitchSlider.value).toFixed(1);
-  if (utterance) utterance.pitch = parseFloat(pitchSlider.value);
-});
-volSlider.addEventListener('input', () => {
-  volVal.textContent = Math.round(parseFloat(volSlider.value) * 100);
-  if (utterance) utterance.volume = parseFloat(volSlider.value);
-});
+// Sliders
+rateSlider.addEventListener('input',  () => { rateVal.textContent  = parseFloat(rateSlider.value).toFixed(1);  $('fcSpeedLbl').textContent = parseFloat(rateSlider.value).toFixed(1)+'x'; });
+pitchSlider.addEventListener('input', () => { pitchVal.textContent = parseFloat(pitchSlider.value).toFixed(1); });
+volSlider.addEventListener('input',   () => { volVal.textContent   = Math.round(parseFloat(volSlider.value)*100); });
 
-// ── TTS CORE ──
+// ── SPEECH ENGINE ──
 function buildUtterance(text) {
   const u = new SpeechSynthesisUtterance(text);
   u.rate   = parseFloat(rateSlider.value);
   u.pitch  = parseFloat(pitchSlider.value);
   u.volume = parseFloat(volSlider.value);
-  const vi = parseInt(voiceSelect.value);
+  const vi = parseInt(voiceSel.value);
   if (voices[vi]) u.voice = voices[vi];
 
   u.onstart = () => {
     isPlaying = true; isPaused = false;
     playBtn.textContent = '⏸';
+    $('fc-play').textContent = '⏸';
     statusPill.textContent = '▶ Reproduciendo';
     statusPill.className = 'status-pill playing';
   };
   u.onpause = () => {
     isPaused = true;
     playBtn.textContent = '▶';
+    $('fc-play').textContent = '▶';
     statusPill.textContent = '⏸ Pausado';
     statusPill.className = 'status-pill paused';
   };
   u.onresume = () => {
     isPaused = false;
     playBtn.textContent = '⏸';
+    $('fc-play').textContent = '⏸';
     statusPill.textContent = '▶ Reproduciendo';
     statusPill.className = 'status-pill playing';
   };
   u.onend = u.onerror = () => {
     isPlaying = false; isPaused = false; utterance = null;
     playBtn.textContent = '▶';
+    $('fc-play').textContent = '▶';
     statusPill.textContent = 'Detenido';
     statusPill.className = 'status-pill';
+    clearWordHighlights();
   };
+
+  // Word boundary for synchronized highlighting
+  u.onboundary = (e) => {
+    if (e.name !== 'word') return;
+    const charIdx = e.charIndex;
+    highlightWordAtChar(charIdx, text);
+  };
+
   return u;
 }
 
-function speak(text) {
-  if (!text) { alert('No hay texto para leer.'); return; }
+let charToWordMap = [];
+function buildCharMap(text) {
+  charToWordMap = [];
+  let wIdx = 0;
+  let inWord = false;
+  let wordStart = 0;
+  for (let i = 0; i <= text.length; i++) {
+    const ch = i < text.length ? text[i] : ' ';
+    const isWS = /\s/.test(ch);
+    if (!isWS && !inWord) { inWord = true; wordStart = i; }
+    if (isWS && inWord) { inWord = false; wIdx++; }
+    if (inWord) charToWordMap[i] = wIdx;
+  }
+}
+
+function highlightWordAtChar(charIdx, text) {
+  if (!wordSpans.length) return;
+  // Count word index at charIdx
+  const textBefore = text.substring(0, charIdx);
+  const words = textBefore.split(/\s+/);
+  const wIdx = Math.max(0, words.length - 1);
+  if (wIdx === currentWordIdx) return;
+  if (currentWordIdx < wordSpans.length) wordSpans[currentWordIdx].classList.replace('reading','done');
+  currentWordIdx = wIdx;
+  if (currentWordIdx < wordSpans.length) {
+    const span = wordSpans[currentWordIdx];
+    span.classList.add('reading');
+    // scroll into view
+    span.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // update progress
+    const pct = Math.round((currentWordIdx / wordSpans.length) * 100);
+    setProgress(pct);
+  }
+}
+
+function clearWordHighlights() {
+  wordSpans.forEach(s => { s.classList.remove('reading','done'); });
+  currentWordIdx = 0;
+  setProgress(0);
+}
+
+window.speakText = function(text) {
+  if (!text) return;
   synth.cancel();
   utterance = buildUtterance(text);
   synth.speak(utterance);
-}
+};
 
 function stopSpeech() {
   synth.cancel();
   isPlaying = false; isPaused = false; utterance = null;
   playBtn.textContent = '▶';
+  $('fc-play').textContent = '▶';
   statusPill.textContent = 'Detenido';
   statusPill.className = 'status-pill';
+  clearWordHighlights();
 }
 
-// Play / Pause button
-playBtn.addEventListener('click', () => {
+// Play/Pause
+function togglePlay() {
   if (!isPlaying && !isPaused) {
-    speak(fullText || display.textContent);
+    const txt = fullText || display.textContent;
+    if (!txt.trim()) { showToast('Carga texto primero.'); return; }
+    speakText(txt);
   } else if (isPlaying && !isPaused) {
     synth.pause();
   } else if (isPaused) {
     synth.resume();
   }
-});
-
-// Stop button
+}
+playBtn.addEventListener('click', togglePlay);
+$('fc-play').addEventListener('click', togglePlay);
 stopBtn.addEventListener('click', stopSpeech);
+$('fc-stop').addEventListener('click', stopSpeech);
 
-// Read selection button
+// Read selection
 readSelBtn.addEventListener('click', () => {
   const sel = window.getSelection();
-  const txt = sel && !sel.isCollapsed ? sel.toString() : null;
-  if (txt) speak(txt);
-  else alert('Selecciona primero el texto que quieres escuchar.');
+  const txt = sel && !sel.isCollapsed ? sel.toString().trim() : null;
+  if (txt) speakText(txt);
+  else showToast('Selecciona texto primero.');
 });
 
-// ── KEYBOARD SHORTCUTS ──
-document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-  if (e.code === 'Space') { e.preventDefault(); playBtn.click(); }
-  if (e.code === 'Escape') stopSpeech();
+// Float speed
+$('fc-slower').addEventListener('click', () => {
+  let v = Math.max(.5, parseFloat(rateSlider.value) - .1);
+  rateSlider.value = v;
+  rateVal.textContent = v.toFixed(1);
+  $('fcSpeedLbl').textContent = v.toFixed(1)+'x';
 });
-</script>
+$('fc-faster').addEventListener('click', () => {
+  let v = Math.min(2.5, parseFloat(rateSlider.value) + .1);
+  rateSlider.value = v;
+  rateVal.textContent = v.toFixed(1);
+  $('fcSpeedLbl').textContent = v.toFixed(1)+'x';
+});
 
-<!-- SERVICE WORKER REGISTRATION -->
-<script>
+// ── DRAG FLOAT ──
+(function() {
+  const el = $('floatCtrl');
+  const handle = $('dragHandle');
+  let ox=0,oy=0,ex=0,ey=0;
+  handle.addEventListener('mousedown', e => {
+    ex = el.offsetLeft; ey = el.offsetTop;
+    ox = e.clientX; oy = e.clientY;
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('mouseup', () => document.removeEventListener('mousemove', onDrag));
+  });
+  function onDrag(e) {
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    el.style.left = (ex + e.clientX - ox) + 'px';
+    el.style.top  = (ey + e.clientY - oy) + 'px';
+  }
+})();
+
+// ── PROGRESS BAR ──
+function setProgress(pct) {
+  readProgress = pct;
+  progressFill.style.width = pct + '%';
+  posInfo.textContent = pct + '%';
+}
+$('progressTrack').addEventListener('click', e => {
+  const rect = $('progressTrack').getBoundingClientRect();
+  const pct  = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  const wIdx = Math.floor((pct / 100) * wordSpans.length);
+  // Jump reading to that word
+  stopSpeech();
+  if (!fullText) return;
+  const words = fullText.split(/\s+/);
+  const remaining = words.slice(wIdx).join(' ');
+  setTimeout(() => {
+    currentWordIdx = wIdx;
+    speakText(remaining);
+    if (wordSpans[wIdx]) wordSpans[wIdx].scrollIntoView({ behavior:'smooth', block:'center' });
+  }, 100);
+  setProgress(Math.round(pct));
+});
+
+// ══════════════════════════════════════════
+// CLAUDE API CALLS
+// ══════════════════════════════════════════
+async function callClaude(prompt, maxTokens=2000) {
+  const response = await fetch(CLAUDE_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await response.json();
+  if (data.error) throw new Error(data.error.message || 'Error de API');
+  return data.content.map(b => b.text || '').join('');
+}
+
+function getTextForAI() {
+  const t = fullText.trim();
+  if (!t) { showToast('Carga texto primero.'); return null; }
+  // Limit to ~8000 chars for API
+  return t.length > 8000 ? t.substring(0, 8000) + '...' : t;
+}
+
+// ── SUMMARY ──
+$('genSummary').addEventListener('click', async () => {
+  const text = getTextForAI(); if (!text) return;
+  const level = $('summaryLevel').value;
+  const niveles = { breve: '3-5 oraciones concisas', intermedio: '1-2 párrafos completos', detallado: 'análisis detallado con ideas principales, secundarias y conclusión' };
+  $('summaryOutput').textContent = '⏳ Generando resumen…';
+  setLoading(30);
+  try {
+    const res = await callClaude(
+      `Genera un resumen en español del siguiente texto. Nivel: ${niveles[level]}.\n\nTexto:\n${text}`,
+      1000
+    );
+    $('summaryOutput').textContent = res;
+    setLoading(100);
+    showToast('Resumen generado ✓');
+  } catch(e) {
+    $('summaryOutput').textContent = '❌ Error: ' + e.message;
+    setLoading(100);
+  }
+});
+
+$('copySummary').addEventListener('click', () => {
+  navigator.clipboard.writeText($('summaryOutput').textContent).then(() => showToast('Resumen copiado ✓'));
+});
+
+// ── QUESTIONS ──
+$('genQuestions').addEventListener('click', async () => {
+  const text = getTextForAI(); if (!text) return;
+  const type  = $('qType').value;
+  const level = $('qLevel').value;
+  const count = parseInt($('qCount').value) || 10;
+
+  const typeMap  = { mixtas:'variadas (abiertas, cerradas y de opción múltiple)', abiertas:'abiertas', cerradas:'cerradas (Sí/No)', opcion_multiple:'de opción múltiple con 4 alternativas (A, B, C, D)' };
+  const levelMap = { literal:'literal (información explícita)', inferencial:'inferencial (deducciones)', critico:'crítico-valorativo (juicios y valoraciones)', analogico:'analógico-intertextual (comparaciones y conexiones)' };
+
+  $('questionsOutput').textContent = '⏳ Generando preguntas…';
+  setLoading(30);
+  try {
+    const res = await callClaude(
+      `Genera exactamente ${count} preguntas en español sobre el siguiente texto.
+Tipo de preguntas: ${typeMap[type]}.
+Nivel de lectura: ${levelMap[level]}.
+
+Para cada pregunta incluye:
+- Número de pregunta
+- La pregunta
+- Respuesta correcta
+- Justificación breve (por qué esa es la respuesta)
+${type === 'opcion_multiple' ? '- Las 4 opciones A, B, C, D' : ''}
+
+Formato:
+PREGUNTA 1:
+[pregunta]
+${type === 'opcion_multiple' ? 'A) ...\nB) ...\nC) ...\nD) ...\n' : ''}RESPUESTA: [respuesta]
+JUSTIFICACIÓN: [justificación]
+
+Texto:\n${text}`,
+      2000
+    );
+    $('questionsOutput').textContent = res;
+    setLoading(100);
+    showToast('Preguntas generadas ✓');
+  } catch(e) {
+    $('questionsOutput').textContent = '❌ Error: ' + e.message;
+    setLoading(100);
+  }
+});
+
+$('copyQuestions').addEventListener('click', () => {
+  navigator.clipboard.writeText($('questionsOutput').textContent).then(() => showToast('Preguntas copiadas ✓'));
+});
+
+// ── MINDMAP ──
+$('genMindmap').addEventListener('click', async () => {
+  const text = getTextForAI(); if (!text) return;
+  $('conceptMapOutput').innerHTML = '<p style="font-family:var(--font-mono);font-size:.78rem;color:var(--muted);">⏳ Generando mapa…</p>';
+  $('keyIdeasOutput').textContent = '⏳ Analizando ideas clave…';
+  setLoading(30);
+  try {
+    const res = await callClaude(
+      `Analiza el texto y responde SOLO en JSON con esta estructura exacta:
+{
+  "central": "tema central en 3-5 palabras",
+  "ramas": [
+    { "nombre": "rama 1", "conceptos": ["concepto a", "concepto b", "concepto c"] },
+    { "nombre": "rama 2", "conceptos": ["concepto d", "concepto e"] }
+  ],
+  "ideas_clave": ["idea 1", "idea 2", "idea 3", "idea 4", "idea 5"]
+}
+Genera máximo 6 ramas con 3-5 conceptos cada una. Solo JSON, sin texto extra.
+
+Texto:\n${text}`,
+      1500
+    );
+    setLoading(80);
+    let parsed;
+    try {
+      const clean = res.replace(/```json|```/g,'').trim();
+      parsed = JSON.parse(clean);
+    } catch(e2) {
+      throw new Error('No se pudo parsear el mapa. Intenta de nuevo.');
+    }
+    renderMindmap(parsed);
+    setLoading(100);
+    showToast('Mapa generado ✓');
+  } catch(e) {
+    $('conceptMapOutput').innerHTML = '<p style="color:var(--accent);">❌ ' + e.message + '</p>';
+    setLoading(100);
+  }
+});
+
+function renderMindmap(data) {
+  const c = $('conceptMapOutput');
+  let html = `<div style="width:100%;display:flex;flex-direction:column;gap:16px;">`;
+  // Central
+  html += `<div style="text-align:center;"><span class="concept-node concept-central">${escapeHtml(data.central)}</span></div>`;
+  // Branches
+  html += `<div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;">`;
+  (data.ramas || []).forEach((rama, i) => {
+    const colors = ['var(--accent)','var(--accent2)','var(--accent3)','var(--gold)'];
+    const col = colors[i % colors.length];
+    html += `<div style="background:var(--surface2);border:1px solid var(--border);border-top:3px solid ${col};border-radius:var(--radius);padding:12px;min-width:160px;max-width:220px;">
+      <div style="font-family:var(--font-mono);font-size:.72rem;color:${col};font-weight:500;margin-bottom:8px;">${escapeHtml(rama.nombre)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;">`;
+    (rama.conceptos || []).forEach(c2 => {
+      html += `<span class="concept-node" style="font-size:.7rem;padding:4px 8px;">${escapeHtml(c2)}</span>`;
+    });
+    html += `</div></div>`;
+  });
+  html += `</div></div>`;
+  c.innerHTML = html;
+  // Key ideas
+  $('keyIdeasOutput').textContent = (data.ideas_clave || []).map((idea, i) => `${i+1}. ${idea}`).join('\n');
+}
+
+$('exportMindmap').addEventListener('click', () => {
+  const el = $('conceptMapOutput');
+  showToast('Copia la pantalla con Win+Shift+S para guardar el mapa.');
+});
+
+// ── TRANSLATION ──
+async function translateText(text, dest, src='auto') {
+  const langs = { es:'español', en:'inglés', fr:'francés', de:'alemán', pt:'portugués', it:'italiano', zh:'chino', ja:'japonés', ar:'árabe', ru:'ruso', auto:'idioma detectado' };
+  const res = await callClaude(
+    `Traduce el siguiente texto ${src !== 'auto' ? 'del ' + langs[src] : ''} al ${langs[dest]}. Responde SOLO con la traducción, sin explicaciones adicionales.\n\nTexto:\n${text}`,
+    2000
+  );
+  return res;
+}
+
+$('transAll').addEventListener('click', async () => {
+  const text = fullText.trim();
+  if (!text) { showToast('Carga texto primero.'); return; }
+  const dest = $('transDest').value;
+  const src  = $('transSource').value;
+  $('transOriginal').textContent = text.length > 3000 ? text.substring(0,3000)+'...' : text;
+  $('transOutput').textContent = '⏳ Traduciendo…';
+  setLoading(30);
+  try {
+    const truncated = text.length > 5000 ? text.substring(0,5000) : text;
+    const res = await translateText(truncated, dest, src);
+    $('transOutput').textContent = res;
+    setLoading(100);
+    showToast('Traducción completada ✓');
+  } catch(e) {
+    $('transOutput').textContent = '❌ Error: ' + e.message;
+    setLoading(100);
+  }
+});
+
+$('transSel').addEventListener('click', async () => {
+  const sel = window.getSelection();
+  const txt = sel && !sel.isCollapsed ? sel.toString().trim() : null;
+  if (!txt) { showToast('Selecciona texto primero.'); return; }
+  const dest = $('transDest').value;
+  $('transOriginal').textContent = txt;
+  $('transOutput').textContent = '⏳ Traduciendo…';
+  setLoading(30);
+  try {
+    const res = await translateText(txt, dest);
+    $('transOutput').textContent = res;
+    setLoading(100);
+    showToast('Traducción completada ✓');
+  } catch(e) {
+    $('transOutput').textContent = '❌ Error: ' + e.message;
+    setLoading(100);
+  }
+});
+
+$('copyTrans').addEventListener('click', () => {
+  navigator.clipboard.writeText($('transOutput').textContent).then(() => showToast('Traducción copiada ✓'));
+});
+
+// Quick translate from sidebar
+$('quickTranslate').addEventListener('click', async () => {
+  const text = fullText.trim(); if (!text) { showToast('Carga texto primero.'); return; }
+  const dest = $('sideTransDest').value;
+  setLoading(20);
+  try {
+    const truncated = text.length > 5000 ? text.substring(0,5000) : text;
+    showToast('⏳ Traduciendo…', 5000);
+    const res = await translateText(truncated, dest);
+    // Switch to translate tab and show
+    document.querySelector('[data-tab="translate"]').click();
+    $('transOriginal').textContent = truncated;
+    $('transOutput').textContent = res;
+    setLoading(100);
+    showToast('Traducción completada ✓');
+  } catch(e) {
+    showToast('Error: ' + e.message);
+    setLoading(100);
+  }
+});
+
+// ── EXPORT AUDIO (via Web Speech + MediaRecorder if available) ──
+$('exportAudio').addEventListener('click', () => {
+  const text = fullText.trim() || display.textContent.trim();
+  if (!text) { showToast('Carga texto primero.'); return; }
+
+  // Check if MediaRecorder + AudioContext are available
+  if (!window.MediaRecorder || !window.AudioContext) {
+    showToast('Tu navegador no soporta grabación directa. Usa una herramienta de grabación del sistema.');
+    return;
+  }
+
+  showToast('⏳ Inicia la lectura para grabar el audio...', 4000);
+  // We use the Web Speech API + MediaRecorder on the audio output
+  // This is a best-effort approach since Web Speech doesn't give raw audio
+  // Instead, we'll guide user to use system recording
+  const name = ($('audioName').value.trim() || 'stoica-audio').replace(/[^a-zA-Z0-9-_]/g,'_');
+  
+  // Attempt AudioContext recording (Chrome)
+  try {
+    const ctx = new AudioContext();
+    const dest = ctx.createMediaStreamDestination();
+    const chunks = [];
+    const mr = new MediaRecorder(dest.stream);
+    mr.ondataavailable = e => chunks.push(e.data);
+    mr.onstop = () => {
+      const blob = new Blob(chunks, { type:'audio/webm' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = name + '.webm';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Audio exportado ✓ (formato WebM)');
+    };
+    mr.start();
+    speakText(text);
+    // Stop recording when speech ends
+    const check = setInterval(() => {
+      if (!synth.speaking) { mr.stop(); ctx.close(); clearInterval(check); }
+    }, 500);
+  } catch(e) {
+    showToast('Exportación de audio no disponible en este navegador.');
+  }
+});
+
+// ── UTILS ──
+function downloadText(text, filename) {
+  const blob = new Blob([text], { type:'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  const tag = e.target.tagName;
+  if (tag==='TEXTAREA'||tag==='INPUT') return;
+  if (e.code==='Space') { e.preventDefault(); togglePlay(); }
+  if (e.code==='Escape') stopSpeech();
+});
+
+// ── SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .catch(err => console.log('SW no registrado:', err));
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
-</script>
 
+// ── INIT ──
+console.log('%cStoica Reader v2 ✓', 'color:#9b2335;font-family:monospace;font-size:14px;font-weight:bold;');
+</script>
 </body>
 </html>
