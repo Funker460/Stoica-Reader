@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stoica Reader</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --bg:       #f5f0e8;
+      --surface:  #ede8df;
+      --border:   #c9bfae;
+      --text:     #1c1916;
+      --muted:    #6b6157;
+      --accent:   #c0392b;
+      --accent2:  #2c3e50;
+      --btn-bg:   #1c1916;
+      --btn-txt:  #f5f0e8;
+      --shadow:   rgba(28,25,22,0.15);
+      --radius:   10px;
+      --font-body: 'Lora', Georgia, serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-size: 18px;
+    }
+    [data-theme="dark"] {
+      --bg:       #13111a;
+      --surface:  #1e1b28;
+      --border:   #2e2b3a;
+      --text:     #e8e4f0;
+      --muted:    #8a85a0;
+      --accent:   #e05c6c;
+      --accent2:  #7c82d6;
+      --btn-bg:   #e8e4f0;
+      --btn-txt:  #13111a;
+      --shadow:   rgba(0,0,0,0.4);
+    }
+
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── TOPBAR ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 56px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .logo {
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+    .logo span { color: var(--text); }
+    .header-right { display: flex; gap: 8px; align-items: center; }
+
+    /* ── ICON BUTTONS ── */
+    .icon-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      cursor: pointer;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .icon-btn:hover { background: var(--border); }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--btn-bg);
+      color: var(--btn-txt);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:active { transform: scale(0.97); }
+    .btn.secondary {
+      background: transparent;
+      color: var(--text);
+    }
+    .sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+
+    /* ── STATS BAR ── */
+    .statsbar {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      padding: 6px 24px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .statsbar span b { color: var(--text); font-weight: 500; }
+
+    /* ── MAIN LAYOUT ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── TEXT AREA ── */
+    .reader {
+      flex: 1;
+      padding: 40px 80px;
+      overflow-y: auto;
+      line-height: 1.85;
+      font-size: var(--font-size);
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    @media(max-width:700px) { .reader { padding: 24px 20px; } }
+
+    #textDisplay {
+      white-space: pre-wrap;
+      word-break: break-word;
+      outline: none;
+      min-height: 200px;
+    }
+    #textDisplay ::selection { background: #f6d55c; color: #1c1916; }
+    #textDisplay.empty::before {
+      content: "Carga un PDF, un archivo .txt o pega tu texto aquí…";
+      color: var(--muted);
+      font-style: italic;
+      pointer-events: none;
+    }
+    .highlight { background: #f6d55c; color: #1c1916; border-radius: 3px; }
+    .reading-word { background: var(--accent); color: #fff; border-radius: 3px; }
+
+    /* ── PASTE MODAL ── */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      width: min(560px, 95vw);
+      box-shadow: 0 20px 60px var(--shadow);
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .modal h2 { font-family: var(--font-mono); font-size: 1rem; }
+    .modal textarea {
+      width: 100%; height: 240px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      padding: 12px;
+      resize: vertical;
+    }
+    .modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* ── TTS PANEL ── */
+    .tts-panel {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .tts-controls { display: flex; gap: 8px; align-items: center; }
+    .play-btn {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 16px rgba(192,57,43,0.35);
+    }
+    .play-btn:hover { transform: scale(1.06); }
+    .tts-slider-group { display: flex; flex-direction: column; gap: 4px; min-width: 140px; }
+    .tts-slider-group label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    select {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      cursor: pointer;
+      max-width: 200px;
+    }
+
+    /* ── FONT CONTROLS ── */
+    .font-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .font-controls label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* ── STATUS PILL ── */
+    .status-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--border);
+      color: var(--muted);
+    }
+    .status-pill.playing { background: var(--accent); color: #fff; }
+    .status-pill.paused  { background: var(--accent2); color: #fff; }
+
+    /* ── SCROLLBAR ── */
+    .reader::-webkit-scrollbar { width: 6px; }
+    .reader::-webkit-scrollbar-track { background: var(--bg); }
+    .reader::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* hidden input */
+    #fileInput, #txtInput { display: none; }
+  </style>
+</head>
+<body data-theme="light">
+
+<!-- Hidden file inputs -->
+<input type="file" id="fileInput" accept=".pdf" />
+<input type="file" id="txtInput" accept=".txt,.md" />
+
+<!-- HEADER -->
+<header>
+  <div class="logo">STOICA<span>READER</span></div>
+  <div class="header-right">
+    <button class="icon-btn" id="themeBtn" title="Claro / Oscuro">🌙</button>
+    <button class="icon-btn" id="fsBtn" title="Pantalla completa">⛶</button>
+    <button class="icon-btn" id="highlightBtn" title="Resaltar selección">🖊</button>
+  </div>
+</header>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="btn" id="loadPdf">📄 Cargar PDF</button>
+  <button class="btn" id="loadTxt">📝 Cargar TXT</button>
+  <button class="btn secondary" id="pasteBtn">📋 Pegar texto</button>
+  <div class="sep"></div>
+  <div class="font-controls">
+    <label>Fuente</label>
+    <select id="fontSelect">
+      <option value="'Lora', Georgia, serif">Lora (Serif)</option>
+      <option value="'DM Mono', monospace">DM Mono</option>
+      <option value="Georgia, serif">Georgia</option>
+      <option value="Arial, sans-serif">Arial</option>
+      <option value="'Courier New', monospace">Courier New</option>
+    </select>
+    <label>Tamaño</label>
+    <select id="fontSizeSelect">
+      <option value="14px">14</option>
+      <option value="16px">16</option>
+      <option value="18px" selected>18</option>
+      <option value="20px">20</option>
+      <option value="24px">24</option>
+      <option value="28px">28</option>
+    </select>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="statsbar">
+  <span>Palabras: <b id="wordCount">0</b></span>
+  <span>Páginas: <b id="pageCount">0</b></span>
+  <span>Tiempo estimado: <b id="readTime">0 min</b></span>
+  <span id="statusPill" class="status-pill">Detenido</span>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="reader">
+    <div id="textDisplay" class="empty" tabindex="0"></div>
+  </div>
+</main>
+
+<!-- TTS PANEL -->
+<div class="tts-panel">
+  <div class="tts-controls">
+    <button class="play-btn" id="readSelBtn" title="Leer texto seleccionado">◈</button>
+    <button class="play-btn" id="playBtn" title="Reproducir / Pausar">▶</button>
+    <button class="icon-btn" id="stopBtn" title="Detener" style="width:44px;height:44px;font-size:1.1rem;">⏹</button>
+  </div>
+
+  <div class="tts-slider-group">
+    <label>Velocidad: <b id="rateVal">1.0</b>x</label>
+    <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1" />
+  </div>
+
+  <div class="tts-slider-group">
+    <label>Tono: <b id="pitchVal">1.0</b></label>
+    <input type="range" id="pitchSlider" min="0.5" max="2" step="0.1" value="1" />
+  </div>
+
+  <div class="tts-slider-group">
+    <label>Volumen: <b id="volVal">100</b>%</label>
+    <input type="range" id="volSlider" min="0" max="1" step="0.05" value="1" />
+  </div>
+
+  <div>
+    <label style="font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);display:block;margin-bottom:4px;">Voz</label>
+    <select id="voiceSelect"></select>
+  </div>
+</div>
+
+<!-- PASTE MODAL -->
+<div class="overlay" id="pasteOverlay">
+  <div class="modal">
+    <h2>📋 Pegar texto</h2>
+    <textarea id="pasteArea" placeholder="Pega aquí tu texto…"></textarea>
+    <div class="modal-footer">
+      <button class="btn secondary" id="cancelPaste">Cancelar</button>
+      <button class="btn" id="confirmPaste">Cargar texto</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF.js from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+// ── PDF.js worker ──
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── STATE ──
+let fullText = '';
+let synth = window.speechSynthesis;
+let voices = [];
+let utterance = null;
+let isPlaying = false;
+let isPaused = false;
+
+// ── DOM ──
+const display     = document.getElementById('textDisplay');
+const playBtn     = document.getElementById('playBtn');
+const stopBtn     = document.getElementById('stopBtn');
+const readSelBtn  = document.getElementById('readSelBtn');
+const rateSlider  = document.getElementById('rateSlider');
+const pitchSlider = document.getElementById('pitchSlider');
+const volSlider   = document.getElementById('volSlider');
+const voiceSelect = document.getElementById('voiceSelect');
+const rateVal     = document.getElementById('rateVal');
+const pitchVal    = document.getElementById('pitchVal');
+const volVal      = document.getElementById('volVal');
+const wordCount   = document.getElementById('wordCount');
+const pageCount   = document.getElementById('pageCount');
+const readTime    = document.getElementById('readTime');
+const statusPill  = document.getElementById('statusPill');
+const themeBtn    = document.getElementById('themeBtn');
+const fsBtn       = document.getElementById('fsBtn');
+const highlightBtn= document.getElementById('highlightBtn');
+const fontSelect  = document.getElementById('fontSelect');
+const fontSizeSelect = document.getElementById('fontSizeSelect');
+const pasteOverlay= document.getElementById('pasteOverlay');
+const pasteArea   = document.getElementById('pasteArea');
+const fileInput   = document.getElementById('fileInput');
+const txtInput    = document.getElementById('txtInput');
+
+// ── THEME ──
+themeBtn.addEventListener('click', () => {
+  const body = document.body;
+  const isDark = body.dataset.theme === 'dark';
+  body.dataset.theme = isDark ? 'light' : 'dark';
+  themeBtn.textContent = isDark ? '🌙' : '☀️';
+});
+
+// ── FULLSCREEN ──
+fsBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+// ── FONT ──
+fontSelect.addEventListener('change', () => {
+  document.documentElement.style.setProperty('--font-body', fontSelect.value);
+});
+fontSizeSelect.addEventListener('change', () => {
+  document.documentElement.style.setProperty('--font-size', fontSizeSelect.value);
+});
+
+// ── LOAD TEXT into display ──
+function loadText(text) {
+  fullText = text.trim();
+  display.classList.remove('empty');
+  display.textContent = fullText;
+  updateStats();
+  stopSpeech();
+}
+
+function updateStats() {
+  const words = fullText ? fullText.split(/\s+/).filter(Boolean).length : 0;
+  wordCount.textContent = words.toLocaleString();
+  const pages = Math.ceil(words / 250);
+  pageCount.textContent = pages;
+  const mins = Math.round(words / 200);
+  readTime.textContent = mins + ' min';
+}
+
+// ── PDF ──
+document.getElementById('loadPdf').addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(s => s.str).join(' ') + '\n\n';
+  }
+  loadText(text);
+  fileInput.value = '';
+});
+
+// ── TXT ──
+document.getElementById('loadTxt').addEventListener('click', () => txtInput.click());
+txtInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => loadText(ev.target.result);
+  reader.readAsText(file, 'UTF-8');
+  txtInput.value = '';
+});
+
+// ── PASTE ──
+document.getElementById('pasteBtn').addEventListener('click', () => {
+  pasteOverlay.classList.add('open');
+  pasteArea.focus();
+});
+document.getElementById('cancelPaste').addEventListener('click', () => {
+  pasteOverlay.classList.remove('open');
+  pasteArea.value = '';
+});
+document.getElementById('confirmPaste').addEventListener('click', () => {
+  const t = pasteArea.value.trim();
+  if (t) loadText(t);
+  pasteOverlay.classList.remove('open');
+  pasteArea.value = '';
+});
+pasteOverlay.addEventListener('click', (e) => {
+  if (e.target === pasteOverlay) document.getElementById('cancelPaste').click();
+});
+
+// ── HIGHLIGHT ──
+highlightBtn.addEventListener('click', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const mark = document.createElement('mark');
+  mark.className = 'highlight';
+  try { range.surroundContents(mark); } catch(e) {}
+  sel.removeAllRanges();
+});
+
+// ── VOICES ──
+function loadVoices() {
+  voices = synth.getVoices();
+  voiceSelect.innerHTML = '';
+  voices.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${v.name} (${v.lang})`;
+    if (v.lang.startsWith('es')) opt.selected = true;
+    voiceSelect.appendChild(opt);
+  });
+}
+loadVoices();
+if (speechSynthesis.onvoiceschanged !== undefined) {
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+// ── SLIDERS ──
+rateSlider.addEventListener('input', () => {
+  rateVal.textContent = parseFloat(rateSlider.value).toFixed(1);
+  if (utterance) utterance.rate = parseFloat(rateSlider.value);
+});
+pitchSlider.addEventListener('input', () => {
+  pitchVal.textContent = parseFloat(pitchSlider.value).toFixed(1);
+  if (utterance) utterance.pitch = parseFloat(pitchSlider.value);
+});
+volSlider.addEventListener('input', () => {
+  volVal.textContent = Math.round(parseFloat(volSlider.value) * 100);
+  if (utterance) utterance.volume = parseFloat(volSlider.value);
+});
+
+// ── TTS CORE ──
+function buildUtterance(text) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate   = parseFloat(rateSlider.value);
+  u.pitch  = parseFloat(pitchSlider.value);
+  u.volume = parseFloat(volSlider.value);
+  const vi = parseInt(voiceSelect.value);
+  if (voices[vi]) u.voice = voices[vi];
+
+  u.onstart = () => {
+    isPlaying = true; isPaused = false;
+    playBtn.textContent = '⏸';
+    statusPill.textContent = '▶ Reproduciendo';
+    statusPill.className = 'status-pill playing';
+  };
+  u.onpause = () => {
+    isPaused = true;
+    playBtn.textContent = '▶';
+    statusPill.textContent = '⏸ Pausado';
+    statusPill.className = 'status-pill paused';
+  };
+  u.onresume = () => {
+    isPaused = false;
+    playBtn.textContent = '⏸';
+    statusPill.textContent = '▶ Reproduciendo';
+    statusPill.className = 'status-pill playing';
+  };
+  u.onend = u.onerror = () => {
+    isPlaying = false; isPaused = false; utterance = null;
+    playBtn.textContent = '▶';
+    statusPill.textContent = 'Detenido';
+    statusPill.className = 'status-pill';
+  };
+  return u;
+}
+
+function speak(text) {
+  if (!text) { alert('No hay texto para leer.'); return; }
+  synth.cancel();
+  utterance = buildUtterance(text);
+  synth.speak(utterance);
+}
+
+function stopSpeech() {
+  synth.cancel();
+  isPlaying = false; isPaused = false; utterance = null;
+  playBtn.textContent = '▶';
+  statusPill.textContent = 'Detenido';
+  statusPill.className = 'status-pill';
+}
+
+// Play / Pause button
+playBtn.addEventListener('click', () => {
+  if (!isPlaying && !isPaused) {
+    speak(fullText || display.textContent);
+  } else if (isPlaying && !isPaused) {
+    synth.pause();
+  } else if (isPaused) {
+    synth.resume();
+  }
+});
+
+// Stop button
+stopBtn.addEventListener('click', stopSpeech);
+
+// Read selection button
+readSelBtn.addEventListener('click', () => {
+  const sel = window.getSelection();
+  const txt = sel && !sel.isCollapsed ? sel.toString() : null;
+  if (txt) speak(txt);
+  else alert('Selecciona primero el texto que quieres escuchar.');
+});
+
+// ── KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+  if (e.code === 'Space') { e.preventDefault(); playBtn.click(); }
+  if (e.code === 'Escape') stopSpeech();
+});
+</script>
+
+<!-- SERVICE WORKER REGISTRATION -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .catch(err => console.log('SW no registrado:', err));
+  });
+}
+</script>
+
+</body>
+</html>
