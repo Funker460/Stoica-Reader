@@ -1,301 +1,496 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="dark" data-palette="default">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Stoica Reader</title>
 <link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#0e0f14"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
-/* ════════════════════════════════════════════════════════
-   STOICA READER v4.2 — ACADEMIC EDITION
-   Paleta sobria, tipografía académica, claridad cognitiva
-════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   STOICA READER v4.3 — COLOR SYSTEM + NotebookLM NAVIGATION
+   ─────────────────────────────────────────────────────────────
+   Color architecture:
+   --c-bg, --c-surf, --c-surf2, --c-surf3   (surfaces)
+   --c-bdr, --c-bdr2                         (borders)
+   --c-txt, --c-txt2, --c-muted             (text)
+   --c-pri, --c-pri-dim                      (primary accent)
+   --c-sec, --c-sec-dim                      (secondary accent)
+   --c-hi                                    (highlight/mark)
+   --c-btn-txt                               (button text on primary)
+   --c-card                                  (card bg override)
+   --c-head-txt                              (heading text)
+   --c-menu-txt                              (menu/nav text)
+   --c-link                                  (links)
+═══════════════════════════════════════════════════════════════ */
+
+/* ── DARK DEFAULT: Fondo negro, Azul + Dorado ─────────── */
 :root {
-  /* ── DARK THEME (Default) ── */
-  --bg:       #0e0f14;
-  --bg2:      #111318;
-  --surf:     #16181f;
-  --surf2:    #1c1e27;
-  --surf3:    #232630;
-  --bdr:      #272a35;
-  --bdr2:     #323646;
-  --txt:      #dde1ec;
-  --txt2:     #a8afc4;
-  --muted:    #5e6480;
+  --c-bg:       #0b0c10;
+  --c-bg2:      #0f1015;
+  --c-surf:     #14151c;
+  --c-surf2:    #1a1b24;
+  --c-surf3:    #21222e;
+  --c-bdr:      #252733;
+  --c-bdr2:     #30324a;
+  --c-txt:      #e2e6f0;
+  --c-txt2:     #a4abc2;
+  --c-muted:    #575e7a;
+  --c-head-txt: #e2e6f0;
+  --c-menu-txt: #a4abc2;
+  --c-link:     #6fa3f0;
 
-  /* ── ACCENT PALETTE — Refined, academic ── */
-  --acc:      #5b8dee;   /* Azul institucional */
-  --acc-dim:  rgba(91,141,238,.13);
-  --acc2:     #3dc9b0;   /* Teal / esmeralda */
-  --acc2-dim: rgba(61,201,176,.1);
-  --acc3:     #e8914a;   /* Ámbar cálido */
-  --acc3-dim: rgba(232,145,74,.1);
-  --warn:     #e05c6c;
-  --gold:     #c8a653;
+  /* Primary: Azul institucional */
+  --c-pri:      #4f85e8;
+  --c-pri-dim:  rgba(79,133,232,.14);
+  --c-pri-btn:  #fff;
 
-  /* ── TTS highlight ── */
-  --hi-now:   #5b8dee;
-  --hi-done:  rgba(91,141,238,.1);
+  /* Secondary: Dorado académico */
+  --c-sec:      #c9a64a;
+  --c-sec-dim:  rgba(201,166,74,.12);
 
-  /* ── UI ── */
-  --shad:     rgba(0,0,0,.55);
-  --shad2:    rgba(0,0,0,.85);
-  --r:6px; --r2:10px; --r3:18px;
+  /* Highlight */
+  --c-hi:       rgba(201,166,74,.28);
+  --c-hi-bdr:   #c9a64a;
+  --c-hi-now:   #4f85e8;
+  --c-hi-done:  rgba(79,133,232,.12);
+
+  /* Cards */
+  --c-card:     #14151c;
+
+  /* Extras */
+  --c-warn:     #d95f6e;
+  --c-teal:     #3cbfa8;
+  --c-teal-dim: rgba(60,191,168,.1);
+  --c-amber:    #d97d3a;
+
+  /* Shadows */
+  --shad:   rgba(0,0,0,.6);
+  --shad2:  rgba(0,0,0,.88);
+
+  /* Geometry */
+  --r:6px; --r2:10px; --r3:20px;
   --fs:18px; --lh:1.95;
 
-  /* ── FONTS ── */
+  /* Fonts */
   --fBody: 'Source Serif 4', Georgia, serif;
   --fSans: 'IBM Plex Sans', system-ui, sans-serif;
   --fMono: 'IBM Plex Mono', monospace;
 
-  /* ── GRADIENTS ── */
-  --grad: linear-gradient(135deg, var(--acc) 0%, var(--acc2) 100%);
-  --grad-h: linear-gradient(135deg, #4a7de8 0%, #2db89e 100%);
-}
-[data-theme=light] {
-  --bg:#f7f8fb; --bg2:#f0f2f7; --surf:#ffffff; --surf2:#f0f2f8;
-  --surf3:#e6e9f2; --bdr:#d8dce8; --bdr2:#c4c9d8;
-  --txt:#1a1d2e; --txt2:#4a5070; --muted:#8890aa;
-  --shad:rgba(26,29,46,.1); --shad2:rgba(26,29,46,.25);
-  --acc:#3d6fd4; --acc-dim:rgba(61,111,212,.1);
-  --acc2:#2aaa96; --acc2-dim:rgba(42,170,150,.08);
-  --acc3:#c4783a; --acc3-dim:rgba(196,120,58,.1);
-  --warn:#c94255; --gold:#a8893f;
-  --hi-now:#3d6fd4; --hi-done:rgba(61,111,212,.1);
+  /* Gradient */
+  --grad: linear-gradient(135deg, var(--c-pri) 0%, var(--c-teal) 100%);
+
+  /* Sidebar */
+  --sidebar-w: 220px;
 }
 
+/* ── LIGHT DEFAULT: Fondo blanco, Azul + Dorado ─────────── */
+[data-theme=light] {
+  --c-bg:       #ffffff;
+  --c-bg2:      #f5f6fa;
+  --c-surf:     #ffffff;
+  --c-surf2:    #eff1f8;
+  --c-surf3:    #e4e7f2;
+  --c-bdr:      #dce0ee;
+  --c-bdr2:     #c8cde0;
+  --c-txt:      #181a28;
+  --c-txt2:     #434868;
+  --c-muted:    #8b92ae;
+  --c-head-txt: #181a28;
+  --c-menu-txt: #434868;
+  --c-link:     #2d65c2;
+
+  --c-pri:      #2d65c2;
+  --c-pri-dim:  rgba(45,101,194,.1);
+  --c-pri-btn:  #fff;
+
+  --c-sec:      #a8883a;
+  --c-sec-dim:  rgba(168,136,58,.1);
+
+  --c-hi:       rgba(168,136,58,.2);
+  --c-hi-bdr:   #a8883a;
+  --c-hi-now:   #2d65c2;
+  --c-hi-done:  rgba(45,101,194,.1);
+
+  --c-card:     #ffffff;
+
+  --c-warn:     #b83549;
+  --c-teal:     #258f7c;
+  --c-teal-dim: rgba(37,143,124,.08);
+  --c-amber:    #b0662a;
+
+  --shad:  rgba(24,26,40,.08);
+  --shad2: rgba(24,26,40,.18);
+}
+
+/* ══════════════════════════════════════════════════════════
+   PALETTE OVERRIDES — Applied via data-palette attribute
+══════════════════════════════════════════════════════════ */
+/* Midnight Sapphire — Dark blue-violet */
+[data-theme=dark][data-palette="sapphire"] {
+  --c-bg:#08090f; --c-bg2:#0d0f1a; --c-surf:#121526; --c-surf2:#181c30;
+  --c-surf3:#1e233a; --c-bdr:#262c48; --c-bdr2:#333d60;
+  --c-txt:#dde4f8; --c-txt2:#8d9ac4; --c-muted:#4c5580;
+  --c-head-txt:#dde4f8; --c-menu-txt:#8d9ac4;
+  --c-pri:#7b9df5; --c-pri-dim:rgba(123,157,245,.14);
+  --c-sec:#f0b060; --c-sec-dim:rgba(240,176,96,.12);
+  --c-hi:rgba(240,176,96,.22); --c-hi-bdr:#f0b060;
+  --c-hi-now:#7b9df5; --c-hi-done:rgba(123,157,245,.12);
+  --c-card:#121526; --c-link:#a0baff;
+  --c-teal:#4ac4b2; --c-amber:#e07c3a;
+}
+[data-theme=light][data-palette="sapphire"] {
+  --c-pri:#3b58cc; --c-pri-dim:rgba(59,88,204,.1);
+  --c-sec:#c08830; --c-sec-dim:rgba(192,136,48,.1);
+  --c-hi:rgba(192,136,48,.18); --c-hi-bdr:#c08830;
+  --c-hi-now:#3b58cc; --c-link:#3b58cc;
+}
+
+/* Forest — Green academic */
+[data-theme=dark][data-palette="forest"] {
+  --c-bg:#070c08; --c-bg2:#0c1210; --c-surf:#111a14; --c-surf2:#182019;
+  --c-surf3:#1f2a21; --c-bdr:#233228; --c-bdr2:#2e4035;
+  --c-txt:#d8ede0; --c-txt2:#85b095; --c-muted:#486655;
+  --c-head-txt:#d8ede0; --c-menu-txt:#85b095;
+  --c-pri:#4caf80; --c-pri-dim:rgba(76,175,128,.14);
+  --c-sec:#d4a84b; --c-sec-dim:rgba(212,168,75,.12);
+  --c-hi:rgba(212,168,75,.22); --c-hi-bdr:#d4a84b;
+  --c-hi-now:#4caf80; --c-hi-done:rgba(76,175,128,.12);
+  --c-card:#111a14; --c-link:#6fcf97;
+  --c-teal:#38b2a0; --c-amber:#c87d2a;
+}
+[data-theme=light][data-palette="forest"] {
+  --c-pri:#2d7f56; --c-pri-dim:rgba(45,127,86,.1);
+  --c-sec:#9a7530; --c-sec-dim:rgba(154,117,48,.1);
+  --c-hi:rgba(154,117,48,.18); --c-hi-bdr:#9a7530;
+  --c-hi-now:#2d7f56; --c-link:#2d7f56;
+}
+
+/* Crimson — Warm deep red */
+[data-theme=dark][data-palette="crimson"] {
+  --c-bg:#100808; --c-bg2:#160c0c; --c-surf:#1e1010; --c-surf2:#261515;
+  --c-surf3:#2e1a1a; --c-bdr:#3a2020; --c-bdr2:#4a2828;
+  --c-txt:#f0dede; --c-txt2:#c08888; --c-muted:#7a4848;
+  --c-head-txt:#f0dede; --c-menu-txt:#c08888;
+  --c-pri:#d05858; --c-pri-dim:rgba(208,88,88,.14);
+  --c-sec:#d4a84b; --c-sec-dim:rgba(212,168,75,.12);
+  --c-hi:rgba(212,168,75,.22); --c-hi-bdr:#d4a84b;
+  --c-hi-now:#d05858; --c-hi-done:rgba(208,88,88,.12);
+  --c-card:#1e1010; --c-link:#e88080;
+  --c-teal:#b07040; --c-amber:#d07020;
+}
+[data-theme=light][data-palette="crimson"] {
+  --c-pri:#a03030; --c-pri-dim:rgba(160,48,48,.1);
+  --c-sec:#907030; --c-sec-dim:rgba(144,112,48,.1);
+  --c-hi:rgba(144,112,48,.18); --c-hi-bdr:#907030;
+  --c-hi-now:#a03030; --c-link:#a03030;
+}
+
+/* Obsidian — Ultra dark minimal */
+[data-theme=dark][data-palette="obsidian"] {
+  --c-bg:#000000; --c-bg2:#080808; --c-surf:#0e0e0e; --c-surf2:#141414;
+  --c-surf3:#1a1a1a; --c-bdr:#202020; --c-bdr2:#2c2c2c;
+  --c-txt:#e8e8e8; --c-txt2:#888888; --c-muted:#484848;
+  --c-head-txt:#e8e8e8; --c-menu-txt:#888888;
+  --c-pri:#6688cc; --c-pri-dim:rgba(102,136,204,.14);
+  --c-sec:#cc9944; --c-sec-dim:rgba(204,153,68,.12);
+  --c-hi:rgba(204,153,68,.22); --c-hi-bdr:#cc9944;
+  --c-hi-now:#6688cc; --c-hi-done:rgba(102,136,204,.12);
+  --c-card:#0e0e0e; --c-link:#88aaee;
+  --c-teal:#448888; --c-amber:#aa6622;
+}
+
+/* Arctic — Clean cool gray */
+[data-theme=light][data-palette="arctic"] {
+  --c-bg:#f8f9fc; --c-bg2:#f0f2f8; --c-surf:#ffffff; --c-surf2:#eaecf4;
+  --c-surf3:#e0e4ef; --c-bdr:#d0d5e8; --c-bdr2:#b8bedc;
+  --c-pri:#4060b8; --c-pri-dim:rgba(64,96,184,.1);
+  --c-sec:#8c6e1c; --c-sec-dim:rgba(140,110,28,.1);
+  --c-hi:rgba(140,110,28,.18); --c-hi-bdr:#8c6e1c;
+  --c-hi-now:#4060b8; --c-link:#4060b8;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BASE RESET
+══════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; }
 body {
   font-family: var(--fSans);
-  background: var(--bg);
-  color: var(--txt);
+  background: var(--c-bg);
+  color: var(--c-txt);
   display: flex;
   flex-direction: column;
-  transition: background .3s, color .3s;
+  transition: background .25s, color .25s;
 }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: var(--c-bdr2); border-radius: 4px; }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    HEADER
-══════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 header {
-  height: 46px;
-  background: var(--surf);
-  border-bottom: 1px solid var(--bdr);
+  height: 48px;
+  background: var(--c-surf);
+  border-bottom: 1px solid var(--c-bdr);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 18px;
   flex-shrink: 0;
   z-index: 60;
 }
 .logo {
   font-family: var(--fMono);
-  font-size: .74rem;
-  font-weight: 400;
-  letter-spacing: .25em;
-  color: var(--acc);
+  font-size: .78rem;
+  font-weight: 500;
+  letter-spacing: .22em;
+  color: var(--c-pri);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.logo .sep { color: var(--bdr2); }
-.logo .sub { color: var(--muted); font-weight: 300; letter-spacing: .1em; }
+.logo .sep { color: var(--c-bdr2); letter-spacing: 0; }
+.logo .sub {
+  color: var(--c-muted);
+  font-weight: 300;
+  letter-spacing: .08em;
+  font-size: .7rem;
+}
 .badge-v {
   font-size: .52rem;
-  background: var(--acc-dim);
-  color: var(--acc);
+  background: var(--c-pri-dim);
+  color: var(--c-pri);
   padding: 2px 7px;
   border-radius: 10px;
   letter-spacing: .06em;
-  border: 1px solid rgba(91,141,238,.25);
+  border: 1px solid rgba(79,133,232,.2);
   font-family: var(--fMono);
 }
 .hdr-r { display: flex; gap: 3px; align-items: center; }
 
-/* ══════════════════════════════════════
-   NAVIGATION TABS
-══════════════════════════════════════ */
-.tabs {
+/* ══════════════════════════════════════════════════════════
+   MAIN SHELL — Sidebar + Content
+══════════════════════════════════════════════════════════ */
+.shell {
   display: flex;
-  background: var(--surf);
-  border-bottom: 1px solid var(--bdr);
-  padding: 0 14px;
-  flex-shrink: 0;
-  overflow-x: auto;
-  gap: 0;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
 }
-.tabs::-webkit-scrollbar { height: 0; }
-.tab {
-  padding: 8px 13px;
+
+/* ══════════════════════════════════════════════════════════
+   SIDEBAR NAVIGATION (NotebookLM style)
+══════════════════════════════════════════════════════════ */
+.nav-sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--c-surf);
+  border-right: 1px solid var(--c-bdr);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width .22s, min-width .22s, opacity .2s;
+  z-index: 50;
+}
+.nav-sidebar.collapsed {
+  width: 0;
+  min-width: 0;
+  border: none;
+  overflow: hidden;
+}
+
+/* Nav section group */
+.nav-group { padding: 16px 10px 6px; }
+.nav-group-label {
   font-family: var(--fMono);
-  font-size: .6rem;
-  letter-spacing: .09em;
+  font-size: .58rem;
+  font-weight: 500;
+  letter-spacing: .14em;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  padding: 0 8px 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.nav-group-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--c-bdr);
+}
+
+/* Nav item */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border-radius: var(--r2);
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  font-family: var(--fSans);
+  font-size: .82rem;
+  font-weight: 400;
+  color: var(--c-menu-txt);
   border: none;
   background: none;
-  color: var(--muted);
-  cursor: pointer;
+  width: 100%;
+  text-align: left;
   white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  transition: color .15s, border-color .15s;
+  user-select: none;
+  margin-bottom: 1px;
 }
-.tab.on { color: var(--acc); border-bottom-color: var(--acc); }
-.tab:hover:not(.on) { color: var(--txt2); }
+.nav-item:hover { background: var(--c-surf2); color: var(--c-txt); }
+.nav-item.on {
+  background: var(--c-pri-dim);
+  color: var(--c-pri);
+  font-weight: 500;
+}
+.nav-item .nav-icon {
+  font-size: .88rem;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-family: var(--fMono);
+  font-size: .5rem;
+  background: var(--c-pri-dim);
+  color: var(--c-pri);
+  padding: 1px 5px;
+  border-radius: 8px;
+  border: 1px solid rgba(79,133,232,.2);
+}
 
-/* ══════════════════════════════════════
+/* Sidebar quick-action area */
+.nav-bottom {
+  margin-top: auto;
+  padding: 12px 10px;
+  border-top: 1px solid var(--c-bdr);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CONTENT AREA
+══════════════════════════════════════════════════════════ */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ══════════════════════════════════════════════════════════
    TOOLBAR
-══════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 .bar {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   padding: 6px 14px;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--bdr);
+  background: var(--c-bg2);
+  border-bottom: 1px solid var(--c-bdr);
   align-items: center;
   flex-shrink: 0;
 }
-.vline { width: 1px; height: 18px; background: var(--bdr2); margin: 0 3px; flex-shrink: 0; }
+.vline { width: 1px; height: 18px; background: var(--c-bdr2); margin: 0 3px; flex-shrink: 0; }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    BUTTONS
-══════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 11px;
+  gap: 5px;
+  padding: 5px 12px;
   border-radius: var(--r);
-  border: 1px solid var(--bdr2);
-  background: var(--surf2);
-  color: var(--txt2);
-  font-family: var(--fMono);
-  font-size: .6rem;
-  letter-spacing: .04em;
+  border: 1px solid var(--c-bdr2);
+  background: var(--c-surf2);
+  color: var(--c-txt2);
+  font-family: var(--fSans);
+  font-size: .76rem;
+  font-weight: 400;
   cursor: pointer;
   white-space: nowrap;
   transition: all .15s;
 }
-.btn:hover { background: var(--surf3); color: var(--txt); border-color: var(--bdr2); }
+.btn:hover { background: var(--c-surf3); color: var(--c-txt); }
 .btn:active { transform: scale(.97); }
-.btn.g { background: transparent; color: var(--muted); border-color: var(--bdr); }
-.btn.g:hover { background: var(--surf2); color: var(--txt2); }
-.btn.pri { background: var(--acc); color: #fff; border-color: transparent; }
-.btn.pri:hover { background: #4a7de8; }
-.btn.teal { background: var(--acc2); color: #fff; border-color: transparent; }
+.btn.g { background: transparent; color: var(--c-muted); border-color: var(--c-bdr); }
+.btn.g:hover { background: var(--c-surf2); color: var(--c-txt2); }
+.btn.pri { background: var(--c-pri); color: var(--c-pri-btn); border-color: transparent; }
+.btn.pri:hover { filter: brightness(1.1); }
+.btn.sec { background: var(--c-sec); color: #fff; border-color: transparent; }
+.btn.sec:hover { filter: brightness(1.08); }
+.btn.teal { background: var(--c-teal); color: #fff; border-color: transparent; }
 .btn.teal:hover { filter: brightness(1.1); }
-.btn.amber { background: var(--acc3); color: #fff; border-color: transparent; }
-.btn.amber:hover { filter: brightness(1.1); }
-.btn.danger { background: var(--warn); color: #fff; border-color: transparent; }
+.btn.amber { background: var(--c-amber); color: #fff; border-color: transparent; }
+.btn.danger { background: var(--c-warn); color: #fff; border-color: transparent; }
+
 .ibtn {
   background: none;
-  border: 1px solid var(--bdr);
+  border: 1px solid var(--c-bdr);
   border-radius: var(--r);
-  color: var(--muted);
+  color: var(--c-muted);
   cursor: pointer;
-  width: 30px; height: 30px;
+  width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
-  font-size: .78rem;
+  font-size: .82rem;
   transition: all .15s;
   flex-shrink: 0;
 }
-.ibtn:hover { background: var(--surf2); color: var(--txt2); border-color: var(--bdr2); }
+.ibtn:hover { background: var(--c-surf2); color: var(--c-txt2); border-color: var(--c-bdr2); }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    STATS & PROGRESS
-══════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 .stats {
   display: flex;
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
-  padding: 3px 16px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--bdr);
+  padding: 4px 16px;
+  background: var(--c-bg);
+  border-bottom: 1px solid var(--c-bdr);
   font-family: var(--fMono);
-  font-size: .57rem;
-  color: var(--muted);
+  font-size: .6rem;
+  color: var(--c-muted);
   align-items: center;
   flex-shrink: 0;
 }
-.stats b { color: var(--txt2); font-weight: 500; }
+.stats b { color: var(--c-txt2); font-weight: 500; }
 .pill {
-  font-family: var(--fMono);
-  font-size: .54rem;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: var(--surf2);
-  color: var(--muted);
-  border: 1px solid var(--bdr);
+  font-family: var(--fMono); font-size: .54rem;
+  padding: 2px 9px; border-radius: 20px;
+  background: var(--c-surf2); color: var(--c-muted);
+  border: 1px solid var(--c-bdr);
 }
-.pill.play {
-  background: var(--acc-dim);
-  color: var(--acc);
-  border-color: rgba(91,141,238,.35);
-  animation: blink 1.6s infinite;
-}
-.pill.pause {
-  background: var(--acc2-dim);
-  color: var(--acc2);
-  border-color: rgba(61,201,176,.3);
-}
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.45} }
+.pill.play { background: var(--c-pri-dim); color: var(--c-pri); border-color: rgba(79,133,232,.3); animation: blink 1.6s infinite; }
+.pill.pause { background: var(--c-teal-dim); color: var(--c-teal); border-color: rgba(60,191,168,.3); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-.pbwrap {
-  padding: 0 16px 5px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--bdr);
-  flex-shrink: 0;
-}
-.pbtrack {
-  width: 100%;
-  height: 3px;
-  background: var(--surf2);
-  border-radius: 3px;
-  cursor: pointer;
-  position: relative;
-  overflow: visible;
-}
-.pbfill {
-  height: 100%;
-  width: 0%;
-  border-radius: 3px;
-  background: var(--grad);
-  transition: width .12s;
-  position: relative;
-}
-.pbfill::after {
-  content: '';
-  position: absolute;
-  right: -5px; top: -4px;
-  width: 11px; height: 11px;
-  border-radius: 50%;
-  background: var(--acc);
-  opacity: 0;
-  transition: opacity .15s;
-  box-shadow: 0 0 8px rgba(91,141,238,.6);
-}
-.pbtrack:hover .pbfill::after { opacity: 1; }
+.pbwrap { padding: 0 16px 6px; background: var(--c-bg); border-bottom: 1px solid var(--c-bdr); flex-shrink: 0; }
+.pbtrack { width:100%; height:3px; background:var(--c-surf2); border-radius:3px; cursor:pointer; position:relative; overflow:visible; }
+.pbfill { height:100%; width:0%; border-radius:3px; background:var(--grad); transition:width .12s; position:relative; }
+.pbfill::after { content:''; position:absolute; right:-5px; top:-4px; width:11px; height:11px; border-radius:50%; background:var(--c-pri); opacity:0; transition:opacity .15s; box-shadow:0 0 8px rgba(79,133,232,.55); }
+.pbtrack:hover .pbfill::after { opacity:1; }
 
-/* ══════════════════════════════════════
-   LAYOUT & READER
-══════════════════════════════════════ */
-.layout { display: flex; flex: 1; overflow: hidden; min-height: 0; }
-
-.rpane {
-  flex: 1;
-  overflow-y: auto;
-  padding: 52px 96px;
-  min-width: 0;
-  scroll-behavior: smooth;
-}
-@media (max-width: 700px) { .rpane { padding: 24px 18px; } }
-
+/* ══════════════════════════════════════════════════════════
+   READER PANE
+══════════════════════════════════════════════════════════ */
+.reader-shell { display:flex; flex:1; overflow:hidden; min-height:0; }
+.rpane { flex:1; overflow-y:auto; padding:52px 96px; min-width:0; scroll-behavior:smooth; }
+@media(max-width:700px){ .rpane{ padding:24px 18px; } }
 #textDisplay {
   font-family: var(--fBody);
   font-size: var(--fs);
@@ -306,651 +501,249 @@ header {
   outline: none;
   max-width: 740px;
   margin: 0 auto;
-  color: var(--txt);
+  color: var(--c-txt);
 }
 #textDisplay.mt::before {
   content: 'Carga un archivo o pega tu texto aquí…';
-  color: var(--muted);
+  color: var(--c-muted);
   font-style: italic;
   font-family: var(--fSans);
   font-size: 1rem;
   font-weight: 400;
 }
 
-/* TTS word highlighting */
-.w { display: inline; }
-.w.now {
-  background: var(--hi-now);
-  color: #fff;
-  border-radius: 3px;
-  padding: 0 2px;
-  box-shadow: 0 0 12px rgba(91,141,238,.35);
-}
-.w.done { background: var(--hi-done); border-radius: 2px; }
-mark.hl {
-  background: rgba(200,166,83,.22);
-  color: var(--txt);
-  border-radius: 2px;
-  padding: 0 1px;
-  border-bottom: 1.5px solid var(--gold);
-}
-mark.find { background: rgba(200,166,83,.3); color: var(--txt); border-radius: 2px; }
-mark.find.cur { background: var(--acc3); color: #fff; }
+/* TTS highlights */
+.w { display:inline; }
+.w.now { background:var(--c-hi-now); color:#fff; border-radius:3px; padding:0 2px; box-shadow:0 0 12px rgba(79,133,232,.3); }
+.w.done { background:var(--c-hi-done); border-radius:2px; }
+mark.hl { background:var(--c-hi); color:var(--c-txt); border-radius:2px; padding:0 1px; border-bottom:1.5px solid var(--c-hi-bdr); }
+mark.find { background:rgba(201,166,74,.3); color:var(--c-txt); border-radius:2px; }
+mark.find.cur { background:var(--c-amber); color:#fff; }
 
-/* ══════════════════════════════════════
-   SIDE PANEL
-══════════════════════════════════════ */
-.side {
-  width: 285px;
-  min-width: 265px;
-  border-left: 1px solid var(--bdr);
-  background: var(--surf);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex-shrink: 0;
-  transition: width .22s, min-width .22s;
+/* ── SIDE PANEL (quick settings in reader) ── */
+.side { width:280px; min-width:260px; border-left:1px solid var(--c-bdr); background:var(--c-surf); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; transition:width .22s,min-width .22s; }
+.side.off { width:0; min-width:0; border:none; }
+.sinner { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:10px; }
+.card { background:var(--c-bg2); border:1px solid var(--c-bdr); border-radius:var(--r2); padding:12px; display:flex; flex-direction:column; gap:7px; }
+.card h3 { font-family:var(--fMono); font-size:.6rem; letter-spacing:.12em; color:var(--c-muted); text-transform:uppercase; font-weight:400; }
+.sl-lbl { font-family:var(--fMono); font-size:.58rem; color:var(--c-muted); display:flex; justify-content:space-between; }
+input[type=range] { width:100%; accent-color:var(--c-pri); cursor:pointer; height:3px; }
+select, input[type=text], input[type=number], input[type=color] {
+  border:1px solid var(--c-bdr); border-radius:var(--r);
+  background:var(--c-surf2); color:var(--c-txt);
+  font-family:var(--fMono); font-size:.62rem; padding:5px 8px;
 }
-.side.off { width: 0; min-width: 0; border: none; }
-.sinner {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.card {
-  background: var(--bg2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r2);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-.card h3 {
-  font-family: var(--fMono);
-  font-size: .55rem;
-  letter-spacing: .14em;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-.sl-lbl {
-  font-family: var(--fMono);
-  font-size: .57rem;
-  color: var(--muted);
-  display: flex;
-  justify-content: space-between;
-}
-input[type=range] { width: 100%; accent-color: var(--acc); cursor: pointer; height: 3px; }
-select, input[type=text] {
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  background: var(--surf2);
-  color: var(--txt);
-  font-family: var(--fMono);
-  font-size: .6rem;
-  padding: 5px 8px;
-}
-select { width: 100%; cursor: pointer; }
+select { width:100%; cursor:pointer; }
+input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; border-radius:4px; }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    TTS BAR
-══════════════════════════════════════ */
-.ttsbar {
-  background: var(--surf);
-  border-top: 1px solid var(--bdr);
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-  z-index: 40;
-}
-.pbig {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  border: none;
-  background: var(--grad);
-  color: #fff;
-  font-size: .9rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform .15s, box-shadow .15s;
-  flex-shrink: 0;
-  box-shadow: 0 3px 12px rgba(91,141,238,.3);
-}
-.pbig:hover { transform: scale(1.08); box-shadow: 0 4px 18px rgba(91,141,238,.45); }
-.pbig.sel {
-  background: linear-gradient(135deg, var(--acc2), var(--acc));
-  box-shadow: 0 3px 12px rgba(61,201,176,.3);
-}
-.hint {
-  font-family: var(--fMono);
-  font-size: .56rem;
-  color: var(--muted);
-  margin-left: auto;
-}
+══════════════════════════════════════════════════════════ */
+.ttsbar { background:var(--c-surf); border-top:1px solid var(--c-bdr); padding:8px 16px; display:flex; align-items:center; gap:8px; flex-shrink:0; z-index:40; }
+.pbig { width:40px;height:40px; border-radius:50%; border:none; background:var(--grad); color:#fff; font-size:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .15s,box-shadow .15s; flex-shrink:0; box-shadow:0 3px 12px rgba(79,133,232,.28); }
+.pbig:hover { transform:scale(1.08); }
+.pbig.sel { background:linear-gradient(135deg,var(--c-teal),var(--c-pri)); }
+.hint { font-family:var(--fMono); font-size:.56rem; color:var(--c-muted); margin-left:auto; }
 
-/* ══════════════════════════════════════
-   FLOATING CONTROL
-══════════════════════════════════════ */
-#fc {
-  position: fixed;
-  bottom: 88px; right: 14px;
-  background: var(--surf2);
-  border: 1px solid var(--bdr2);
-  border-radius: var(--r2);
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-  box-shadow: 0 8px 28px var(--shad2);
-  z-index: 300;
-  cursor: move;
-  user-select: none;
-  transition: opacity .2s, transform .2s;
-}
-#fc.off { opacity: 0; pointer-events: none; transform: scale(.84) translateY(8px); }
-.fcdrg { font-family: var(--fMono); font-size: .5rem; color: var(--muted); cursor: grab; }
-.fcspd { font-family: var(--fMono); font-size: .6rem; color: var(--muted); text-align: center; }
-.fcbtn {
-  width: 33px; height: 33px;
-  border-radius: 50%;
-  border: 1px solid var(--bdr2);
-  background: var(--surf3);
-  color: var(--txt2);
-  font-size: .78rem;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-}
-.fcbtn:hover { background: var(--surf2); }
-.fcbtn.r { background: var(--grad); color: #fff; border: none; box-shadow: 0 2px 8px rgba(91,141,238,.3); }
+/* ── FLOAT ── */
+#fc { position:fixed; bottom:88px; right:14px; background:var(--c-surf2); border:1px solid var(--c-bdr2); border-radius:var(--r2); padding:10px; display:flex; flex-direction:column; gap:6px; align-items:center; box-shadow:0 8px 28px var(--shad2); z-index:300; cursor:move; user-select:none; transition:opacity .2s,transform .2s; }
+#fc.off { opacity:0; pointer-events:none; transform:scale(.84) translateY(8px); }
+.fcdrg { font-family:var(--fMono); font-size:.5rem; color:var(--c-muted); cursor:grab; }
+.fcspd { font-family:var(--fMono); font-size:.6rem; color:var(--c-muted); text-align:center; }
+.fcbtn { width:33px;height:33px; border-radius:50%; border:1px solid var(--c-bdr2); background:var(--c-surf3); color:var(--c-txt2); font-size:.78rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.fcbtn:hover { background:var(--c-surf2); }
+.fcbtn.r { background:var(--grad); color:#fff; border:none; }
 
-/* ══════════════════════════════════════
-   OVERLAY / MODAL
-══════════════════════════════════════ */
-.ov {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.75);
-  z-index: 500;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(6px);
-}
-.ov.on { display: flex; }
-.modal {
-  background: var(--surf);
-  border: 1px solid var(--bdr2);
-  border-radius: var(--r2);
-  padding: 24px;
-  width: min(600px, 96vw);
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 24px 60px var(--shad2);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: mIn .18s ease;
-}
-@keyframes mIn { from { opacity: 0; transform: scale(.95) translateY(10px); } }
-.modal h2 { font-family: var(--fMono); font-size: .76rem; letter-spacing: .08em; color: var(--txt); }
-.modal textarea {
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  background: var(--bg);
-  color: var(--txt);
-  font-family: var(--fBody);
-  font-size: .95rem;
-  padding: 12px;
-  width: 100%;
-  min-height: 200px;
-  resize: vertical;
-  line-height: 1.8;
-}
-.mfooter { display: flex; gap: 7px; justify-content: flex-end; flex-wrap: wrap; }
-
-/* ══════════════════════════════════════
-   TAB PANES
-══════════════════════════════════════ */
-.tpane { display: none; flex: 1; overflow: hidden; flex-direction: column; }
-.tpane.on { display: flex; }
-.pinner {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+/* ══════════════════════════════════════════════════════════
+   TAB PANES (inside content area)
+══════════════════════════════════════════════════════════ */
+.tpane { display:none; flex:1; overflow:hidden; flex-direction:column; }
+.tpane.on { display:flex; }
+.pinner { flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:14px; }
 .phead {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  align-items: center;
-  flex-shrink: 0;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--bdr);
-  margin-bottom: 2px;
+  display:flex; gap:7px; flex-wrap:wrap; align-items:center;
+  flex-shrink:0; padding-bottom:12px;
+  border-bottom:1px solid var(--c-bdr); margin-bottom:2px;
 }
 .phead h2 {
-  font-family: var(--fMono);
-  font-size: .68rem;
-  letter-spacing: .12em;
-  color: var(--txt2);
-  margin-right: 6px;
+  font-family:var(--fSans);
+  font-size:.92rem;
+  font-weight:600;
+  letter-spacing:.01em;
+  color:var(--c-head-txt);
+  margin-right:8px;
+}
+.phead p {
+  font-family:var(--fSans);
+  font-size:.76rem;
+  color:var(--c-muted);
+  font-weight:400;
+  width:100%;
+  margin-top:-4px;
 }
 
-/* ══════════════════════════════════════
-   OUTPUT / INFO BOX
-══════════════════════════════════════ */
-.out {
-  background: var(--bg2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 16px;
-  font-family: var(--fBody);
-  font-size: .9rem;
-  line-height: 1.8;
-  white-space: pre-wrap;
-  word-break: break-word;
-  overflow-y: auto;
-  flex: 1;
-}
-.out.mt { color: var(--muted); font-style: italic; font-family: var(--fSans); }
-.infobox {
-  font-family: var(--fMono);
-  font-size: .58rem;
-  color: var(--muted);
-  background: var(--surf);
-  border: 1px solid var(--bdr);
-  border-left: 3px solid var(--acc2);
-  border-radius: 0 var(--r) var(--r) 0;
-  padding: 7px 11px;
-  line-height: 1.65;
-  flex-shrink: 0;
-}
-.infobox b { color: var(--acc2); font-weight: 500; }
-.infobox.warn { border-left-color: var(--acc3); }
-.infobox.warn b { color: var(--acc3); }
+/* ══════════════════════════════════════════════════════════
+   OUTPUT / INFOBOX
+══════════════════════════════════════════════════════════ */
+.out { background:var(--c-bg2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:16px; font-family:var(--fBody); font-size:.9rem; line-height:1.82; white-space:pre-wrap; word-break:break-word; overflow-y:auto; flex:1; }
+.out.mt { color:var(--c-muted); font-style:italic; font-family:var(--fSans); font-size:.84rem; }
+.infobox { font-family:var(--fSans); font-size:.74rem; color:var(--c-txt2); background:var(--c-surf); border:1px solid var(--c-bdr); border-left:3px solid var(--c-teal); border-radius:0 var(--r) var(--r) 0; padding:8px 12px; line-height:1.65; flex-shrink:0; }
+.infobox b { color:var(--c-teal); font-weight:600; }
+.infobox.warn { border-left-color:var(--c-sec); }
+.infobox.warn b { color:var(--c-sec); }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    NOTES
-══════════════════════════════════════ */
-.ncard {
-  background: var(--bg2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  animation: fi .18s ease;
-}
-@keyframes fi { from { opacity: 0; transform: translateY(4px); } }
-.nmeta { font-family: var(--fMono); font-size: .55rem; color: var(--muted); }
-.nbody { font-family: var(--fBody); font-size: .87rem; line-height: 1.7; white-space: pre-wrap; }
-.nacts { display: flex; gap: 5px; flex-wrap: wrap; }
-.nta {
-  border: 1px solid var(--bdr);
-  background: var(--surf2);
-  color: var(--txt);
-  font-family: var(--fSans);
-  font-size: .87rem;
-  padding: 7px 9px;
-  border-radius: 4px;
-  width: 100%;
-  resize: none;
-  min-height: 60px;
-}
+══════════════════════════════════════════════════════════ */
+.ncard { background:var(--c-bg2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:6px; animation:fi .18s ease; }
+@keyframes fi { from { opacity:0; transform:translateY(4px); } }
+.nmeta { font-family:var(--fMono); font-size:.57rem; color:var(--c-muted); }
+.nbody { font-family:var(--fBody); font-size:.88rem; line-height:1.72; white-space:pre-wrap; }
+.nacts { display:flex; gap:5px; flex-wrap:wrap; }
+.nta { border:1px solid var(--c-bdr); background:var(--c-surf2); color:var(--c-txt); font-family:var(--fSans); font-size:.87rem; padding:7px 9px; border-radius:4px; width:100%; resize:none; min-height:60px; }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    TRANSLATE
-══════════════════════════════════════ */
-.tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; min-height: 0; }
-@media (max-width: 580px) { .tgrid { grid-template-columns: 1fr; } }
-.tcol { display: flex; flex-direction: column; gap: 5px; min-height: 0; }
-.tlbl { font-family: var(--fMono); font-size: .56rem; color: var(--muted); letter-spacing: .08em; }
+══════════════════════════════════════════════════════════ */
+.tgrid { display:grid; grid-template-columns:1fr 1fr; gap:14px; flex:1; min-height:0; }
+@media(max-width:580px){ .tgrid { grid-template-columns:1fr; } }
+.tcol { display:flex; flex-direction:column; gap:5px; min-height:0; }
+.tlbl { font-family:var(--fMono); font-size:.6rem; color:var(--c-muted); letter-spacing:.08em; }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    QUESTIONS
-══════════════════════════════════════ */
-.qcard {
-  background: var(--bg2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  transition: border-color .15s;
-}
-.qcard:hover { border-color: var(--bdr2); }
-.qnum {
-  font-family: var(--fMono);
-  font-size: .55rem;
-  color: var(--muted);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.qtxt { font-family: var(--fSans); font-size: .9rem; font-weight: 500; line-height: 1.55; }
-.qans {
-  font-family: var(--fSans);
-  font-size: .84rem;
-  padding-top: 10px;
-  border-top: 1px solid var(--bdr);
-  display: none;
-  color: var(--txt2);
-  line-height: 1.7;
-}
-.qans.vis { display: block; animation: fi .2s ease; }
-.qjust { font-size: .77rem; color: var(--muted); margin-top: 5px; font-style: italic; display: block; }
+══════════════════════════════════════════════════════════ */
+.qcard { background:var(--c-bg2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:14px; display:flex; flex-direction:column; gap:7px; transition:border-color .15s; }
+.qcard:hover { border-color:var(--c-bdr2); }
+.qnum { font-family:var(--fMono); font-size:.57rem; color:var(--c-muted); letter-spacing:.08em; text-transform:uppercase; }
+.qtxt { font-family:var(--fSans); font-size:.9rem; font-weight:500; line-height:1.55; }
+.qans { font-family:var(--fSans); font-size:.84rem; padding-top:10px; border-top:1px solid var(--c-bdr); display:none; color:var(--c-txt2); line-height:1.7; }
+.qans.vis { display:block; animation:fi .2s ease; }
+.qjust { font-size:.77rem; color:var(--c-muted); margin-top:5px; font-style:italic; display:block; }
 
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    VOICES
-══════════════════════════════════════ */
-.voice-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 7px;
-}
-.vcard {
-  background: var(--bg2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 10px 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.vcard:hover { border-color: var(--bdr2); background: var(--surf2); }
-.vcard.sel {
-  border-color: var(--acc);
-  background: var(--acc-dim);
-  box-shadow: 0 0 0 1px rgba(91,141,238,.2);
-}
-.vname { font-family: var(--fMono); font-size: .65rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vlang { font-family: var(--fMono); font-size: .54rem; color: var(--muted); }
-.vtag {
-  font-family: var(--fMono);
-  font-size: .5rem;
-  padding: 2px 6px;
-  border-radius: 10px;
-  background: var(--surf2);
-  border: 1px solid var(--bdr);
-  color: var(--muted);
-  display: inline-block;
-}
-.vtag.es { color: var(--acc3); border-color: rgba(232,145,74,.4); background: var(--acc3-dim); }
-.vtag.en { color: var(--acc); border-color: rgba(91,141,238,.35); background: var(--acc-dim); }
-.vtag.star { color: var(--gold); border-color: rgba(200,166,83,.4); }
-.voice-filter { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; flex-shrink: 0; }
+══════════════════════════════════════════════════════════ */
+.voice-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:7px; }
+.vcard { background:var(--c-bg2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:10px 12px; display:flex; flex-direction:column; gap:4px; cursor:pointer; transition:all .15s; }
+.vcard:hover { border-color:var(--c-bdr2); background:var(--c-surf2); }
+.vcard.sel { border-color:var(--c-pri); background:var(--c-pri-dim); box-shadow:0 0 0 1px rgba(79,133,232,.18); }
+.vname { font-family:var(--fMono); font-size:.66rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vlang { font-family:var(--fMono); font-size:.55rem; color:var(--c-muted); }
+.vtag { font-family:var(--fMono); font-size:.51rem; padding:2px 6px; border-radius:10px; background:var(--c-surf2); border:1px solid var(--c-bdr); color:var(--c-muted); display:inline-block; }
+.vtag.es { color:var(--c-sec); border-color:rgba(201,166,74,.4); background:var(--c-sec-dim); }
+.vtag.en { color:var(--c-pri); border-color:rgba(79,133,232,.35); background:var(--c-pri-dim); }
+.vtag.star { color:var(--c-sec); border-color:rgba(201,166,74,.4); }
+.voice-filter { display:flex; gap:6px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
 
-/* ══════════════════════════════════════
-   TOOLS SECTION (HERRAMIENTAS)
-══════════════════════════════════════ */
-/* Sub-tabs */
-.tool-tabs { display: flex; gap: 4px; flex-shrink: 0; margin-bottom: 2px; }
-.tool-tab {
-  font-family: var(--fMono);
-  font-size: .58rem;
-  padding: 5px 12px;
-  border: 1px solid var(--bdr);
-  border-radius: var(--r3);
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all .15s;
-  letter-spacing: .05em;
-}
-.tool-tab.on { background: var(--acc); color: #fff; border-color: transparent; }
-.tool-tab:hover:not(.on) { background: var(--surf2); color: var(--txt2); }
+/* ══════════════════════════════════════════════════════════
+   TOOLS — Sub-navigation
+══════════════════════════════════════════════════════════ */
+.tool-tabs { display:flex; gap:5px; flex-shrink:0; flex-wrap:wrap; }
+.tool-tab { font-family:var(--fSans); font-size:.74rem; font-weight:400; padding:5px 14px; border:1px solid var(--c-bdr); border-radius:var(--r3); background:transparent; color:var(--c-muted); cursor:pointer; transition:all .15s; }
+.tool-tab.on { background:var(--c-pri); color:#fff; border-color:transparent; font-weight:500; }
+.tool-tab:hover:not(.on) { background:var(--c-surf2); color:var(--c-txt2); }
+.tool-pane { display:none; flex-direction:column; gap:12px; flex:1; min-height:0; }
+.tool-pane.on { display:flex; }
 
-/* Tool pane */
-.tool-pane { display: none; flex-direction: column; gap: 12px; flex: 1; min-height: 0; }
-.tool-pane.on { display: flex; }
+/* Mind map */
+.mm-canvas { background:var(--c-surf); border:1px solid var(--c-bdr); border-radius:var(--r2); padding:20px; overflow:auto; min-height:200px; flex:1; }
+.mm-center { display:inline-block; font-family:var(--fMono); font-size:.82rem; font-weight:500; background:var(--grad); color:#fff; padding:10px 24px; border-radius:var(--r3); letter-spacing:.06em; box-shadow:0 4px 18px rgba(79,133,232,.28); }
+.mm-grid { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:16px; }
+.mm-branch { background:var(--c-surf2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:10px 12px; min-width:140px; max-width:200px; flex:1; }
+.mm-branch-title { font-family:var(--fMono); font-size:.6rem; font-weight:500; letter-spacing:.07em; text-transform:uppercase; margin-bottom:7px; padding-bottom:5px; border-bottom:1px solid var(--c-bdr); }
+.mm-chips { display:flex; flex-wrap:wrap; gap:4px; }
+.mm-chip { font-family:var(--fMono); font-size:.58rem; background:var(--c-bg2); border:1px solid var(--c-bdr2); border-radius:var(--r); padding:3px 8px; cursor:pointer; transition:all .12s; }
+.mm-chip:hover { border-color:var(--c-pri); color:var(--c-pri); }
 
-/* ── MIND MAP ── */
-.mm-canvas {
-  background: var(--surf);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r2);
-  padding: 20px;
-  overflow: auto;
-  min-height: 200px;
-  flex: 1;
-}
-.mm-center {
-  display: inline-block;
-  font-family: var(--fMono);
-  font-size: .8rem;
-  font-weight: 500;
-  background: var(--grad);
-  color: #fff;
-  padding: 10px 22px;
-  border-radius: var(--r3);
-  letter-spacing: .06em;
-  box-shadow: 0 4px 18px rgba(91,141,238,.3);
-}
-.mm-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-top: 16px;
-}
-.mm-branch {
-  background: var(--surf2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 10px 12px;
-  min-width: 140px;
-  max-width: 200px;
-  flex: 1;
-}
-.mm-branch-title {
-  font-family: var(--fMono);
-  font-size: .58rem;
-  font-weight: 500;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-  margin-bottom: 7px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid var(--bdr);
-}
-.mm-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-.mm-chip {
-  font-family: var(--fMono);
-  font-size: .58rem;
-  background: var(--bg2);
-  border: 1px solid var(--bdr2);
-  border-radius: var(--r);
-  padding: 3px 8px;
-  cursor: pointer;
-  transition: all .12s;
-}
-.mm-chip:hover { border-color: var(--acc); color: var(--acc); }
+/* Hierarchy */
+.hier-wrap { padding:4px; overflow-y:auto; flex:1; }
+.hier-root { list-style:none; padding:0; }
+.hier-item { margin:3px 0; }
+.hier-children { list-style:none; padding-left:20px; margin-top:3px; border-left:1px solid var(--c-bdr2); }
+.hier-node { display:inline-flex; align-items:center; gap:6px; font-family:var(--fMono); font-size:.62rem; background:var(--c-surf2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:4px 10px; cursor:pointer; transition:all .12s; margin:2px 0; }
+.hier-node:hover { border-color:var(--c-pri); color:var(--c-pri); }
+.hier-node.l0 { background:var(--c-pri-dim); border-color:rgba(79,133,232,.35); color:var(--c-pri); font-weight:500; font-size:.68rem; }
+.hier-node.l0::before { content:'◆'; font-size:.55rem; }
+.hier-node.l1 { color:var(--c-teal); border-color:rgba(60,191,168,.3); background:var(--c-teal-dim); }
+.hier-node.l1::before { content:'▸'; font-size:.6rem; }
+.hier-node.l2 { color:var(--c-txt2); font-size:.58rem; }
+.hier-node.l2::before { content:'·'; font-size:.7rem; color:var(--c-muted); }
 
-/* ── HIERARCHY ── */
-.hier-wrap { padding: 4px; overflow-y: auto; flex: 1; }
-.hier-root { list-style: none; padding: 0; }
-.hier-item { margin: 3px 0; }
-.hier-children { list-style: none; padding-left: 20px; margin-top: 3px; border-left: 1px solid var(--bdr2); }
-.hier-node {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--fMono);
-  font-size: .62rem;
-  background: var(--surf2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 4px 10px;
-  cursor: pointer;
-  transition: all .12s;
-  margin: 2px 0;
-}
-.hier-node:hover { border-color: var(--acc); color: var(--acc); }
-.hier-node.l0 {
-  background: var(--acc-dim);
-  border-color: rgba(91,141,238,.35);
-  color: var(--acc);
-  font-weight: 500;
-  font-size: .68rem;
-}
-.hier-node.l0::before { content: '◆'; font-size: .55rem; }
-.hier-node.l1 { color: var(--acc2); border-color: rgba(61,201,176,.3); background: var(--acc2-dim); }
-.hier-node.l1::before { content: '▸'; font-size: .6rem; color: var(--acc2); }
-.hier-node.l2 { color: var(--txt2); font-size: .58rem; }
-.hier-node.l2::before { content: '·'; font-size: .7rem; color: var(--muted); }
+/* Comparative */
+.comp-wrap { overflow-x:auto; flex:1; }
+.comp-table { width:100%; border-collapse:collapse; font-family:var(--fSans); font-size:.82rem; }
+.comp-table th { background:var(--c-surf2); border:1px solid var(--c-bdr); padding:9px 14px; font-family:var(--fMono); font-size:.58rem; letter-spacing:.09em; color:var(--c-muted); text-align:left; text-transform:uppercase; }
+.comp-table td { border:1px solid var(--c-bdr); padding:8px 14px; line-height:1.55; vertical-align:top; }
+.comp-table tr:nth-child(even) td { background:var(--c-bg2); }
+.comp-table tr:hover td { background:var(--c-surf); }
+.comp-table .concept-cell { font-family:var(--fMono); font-size:.62rem; font-weight:500; color:var(--c-pri); }
 
-/* ── COMPARATIVE TABLE ── */
-.comp-wrap { overflow-x: auto; flex: 1; }
-.comp-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--fSans);
-  font-size: .82rem;
-}
-.comp-table th {
-  background: var(--surf2);
-  border: 1px solid var(--bdr);
-  padding: 9px 14px;
-  font-family: var(--fMono);
-  font-size: .58rem;
-  letter-spacing: .09em;
-  color: var(--muted);
-  text-align: left;
-  text-transform: uppercase;
-}
-.comp-table td {
-  border: 1px solid var(--bdr);
-  padding: 8px 14px;
-  line-height: 1.55;
-  vertical-align: top;
-}
-.comp-table tr:nth-child(even) td { background: var(--bg2); }
-.comp-table tr:hover td { background: var(--surf); }
-.comp-table .concept-cell {
-  font-family: var(--fMono);
-  font-size: .62rem;
-  font-weight: 500;
-  color: var(--acc);
-}
+/* Ideas */
+.idea-list { display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1; }
+.idea-card { background:var(--c-bg2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:12px 14px; display:flex; gap:10px; align-items:flex-start; }
+.idea-card:hover { border-color:var(--c-bdr2); }
+.idea-num { font-family:var(--fMono); font-size:.62rem; color:var(--c-pri); font-weight:500; min-width:22px; padding-top:1px; }
+.idea-text { font-family:var(--fBody); font-size:.88rem; line-height:1.72; }
 
-/* ── IDEAS KEY ── */
-.idea-list { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; }
-.idea-card {
-  background: var(--bg2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 12px 14px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  transition: border-color .15s;
-}
-.idea-card:hover { border-color: var(--bdr2); }
-.idea-num {
-  font-family: var(--fMono);
-  font-size: .6rem;
-  color: var(--acc);
-  font-weight: 500;
-  min-width: 22px;
-  padding-top: 1px;
-}
-.idea-text { font-family: var(--fBody); font-size: .87rem; line-height: 1.7; color: var(--txt); }
+/* Audio export */
+.rec-badge { display:inline-flex; align-items:center; gap:5px; font-family:var(--fMono); font-size:.6rem; background:rgba(217,95,110,.1); color:var(--c-warn); padding:3px 9px; border-radius:12px; border:1px solid rgba(217,95,110,.35); }
+.rec-dot { width:7px; height:7px; background:var(--c-warn); border-radius:50%; animation:blink .9s infinite; }
 
-/* ══════════════════════════════════════
-   AUDIO EXPORT
-══════════════════════════════════════ */
-.rec-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-family: var(--fMono);
-  font-size: .6rem;
-  background: rgba(224,92,108,.1);
-  color: var(--warn);
-  padding: 3px 9px;
-  border-radius: 12px;
-  border: 1px solid rgba(224,92,108,.35);
-}
-.rec-dot { width: 7px; height: 7px; background: var(--warn); border-radius: 50%; animation: blink .9s infinite; }
+/* Search */
+.srchwrap { display:flex; gap:4px; align-items:center; background:var(--c-surf2); border:1px solid var(--c-bdr); border-radius:var(--r); padding:4px 9px; }
+.srchwrap input { border:none; background:transparent; color:var(--c-txt); font-family:var(--fMono); font-size:.64rem; outline:none; flex:1; min-width:0; }
+.srchwrap input::placeholder { color:var(--c-muted); }
 
-/* ══════════════════════════════════════
-   SEARCH BAR
-══════════════════════════════════════ */
-.srchwrap {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  background: var(--surf2);
-  border: 1px solid var(--bdr);
-  border-radius: var(--r);
-  padding: 4px 8px;
-}
-.srchwrap input {
-  border: none;
-  background: transparent;
-  color: var(--txt);
-  font-family: var(--fMono);
-  font-size: .63rem;
-  outline: none;
-  flex: 1;
-  min-width: 0;
-}
-.srchwrap input::placeholder { color: var(--muted); }
+/* ══════════════════════════════════════════════════════════
+   OVERLAY / MODAL
+══════════════════════════════════════════════════════════ */
+.ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:500; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
+.ov.on { display:flex; }
+.modal { background:var(--c-surf); border:1px solid var(--c-bdr2); border-radius:var(--r2); padding:24px; width:min(640px,96vw); max-height:90vh; overflow-y:auto; box-shadow:0 24px 60px var(--shad2); display:flex; flex-direction:column; gap:14px; animation:mIn .18s ease; }
+@keyframes mIn { from { opacity:0; transform:scale(.95) translateY(10px); } }
+.modal-title { font-family:var(--fSans); font-size:1rem; font-weight:600; color:var(--c-head-txt); letter-spacing:.01em; }
+.modal textarea { border:1px solid var(--c-bdr); border-radius:var(--r); background:var(--c-bg); color:var(--c-txt); font-family:var(--fBody); font-size:.95rem; padding:12px; width:100%; min-height:200px; resize:vertical; line-height:1.8; }
+.mfooter { display:flex; gap:7px; justify-content:flex-end; flex-wrap:wrap; }
 
-/* ══════════════════════════════════════
-   LOADING & TOAST
-══════════════════════════════════════ */
-.lbar {
-  position: fixed; top: 0; left: 0;
-  height: 2px;
-  background: var(--grad);
-  z-index: 999;
-  width: 0%;
-  transition: width .25s;
-  pointer-events: none;
+/* ══════════════════════════════════════════════════════════
+   PERSONALIZACIÓN / COLOR SYSTEM MODAL
+══════════════════════════════════════════════════════════ */
+.palette-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+.palette-card {
+  border:2px solid var(--c-bdr);
+  border-radius:var(--r2);
+  padding:10px;
+  cursor:pointer;
+  transition:all .15s;
+  display:flex; flex-direction:column; gap:6px;
+  background:var(--c-bg2);
 }
-.toast {
-  position: fixed;
-  bottom: 72px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surf2);
-  color: var(--txt);
-  border: 1px solid var(--bdr2);
-  padding: 8px 16px;
-  border-radius: var(--r3);
-  font-family: var(--fMono);
-  font-size: .64rem;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s, transform .2s;
-  white-space: nowrap;
-  box-shadow: 0 6px 24px var(--shad2);
-}
-.toast.on { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+.palette-card:hover { border-color:var(--c-bdr2); }
+.palette-card.active { border-color:var(--c-pri); box-shadow:0 0 0 2px var(--c-pri-dim); }
+.palette-preview { display:flex; gap:3px; height:18px; border-radius:4px; overflow:hidden; }
+.palette-preview span { flex:1; }
+.palette-name { font-family:var(--fMono); font-size:.6rem; font-weight:500; color:var(--c-txt2); }
+.palette-desc { font-family:var(--fSans); font-size:.58rem; color:var(--c-muted); line-height:1.4; }
 
-/* ══════════════════════════════════════
-   FONT ROW & MISC
-══════════════════════════════════════ */
-.frow { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
-.frow label { font-family: var(--fMono); font-size: .56rem; color: var(--muted); }
-.frow select { width: auto; }
-#fileInput { display: none; }
+.custom-section { display:flex; flex-direction:column; gap:10px; }
+.custom-row { display:flex; align-items:center; gap:10px; }
+.custom-row label { font-family:var(--fSans); font-size:.74rem; color:var(--c-txt2); flex:1; }
+.custom-row input[type=color] { width:40px; height:30px; }
+
+.section-title { font-family:var(--fSans); font-size:.8rem; font-weight:600; color:var(--c-txt); margin-top:4px; padding-bottom:6px; border-bottom:1px solid var(--c-bdr); }
+
+/* FROW */
+.frow { display:flex; gap:5px; align-items:center; flex-wrap:wrap; }
+.frow label { font-family:var(--fSans); font-size:.7rem; color:var(--c-muted); }
+.frow select { width:auto; }
+
+/* Loading */
+.lbar { position:fixed; top:0; left:0; height:2px; background:var(--grad); z-index:999; width:0%; transition:width .25s; pointer-events:none; }
+.toast { position:fixed; bottom:72px; left:50%; transform:translateX(-50%); background:var(--c-surf2); color:var(--c-txt); border:1px solid var(--c-bdr2); padding:8px 16px; border-radius:var(--r3); font-family:var(--fMono); font-size:.65rem; z-index:999; opacity:0; pointer-events:none; transition:opacity .2s,transform .2s; white-space:nowrap; box-shadow:0 6px 24px var(--shad2); }
+.toast.on { opacity:1; transform:translateX(-50%) translateY(-4px); }
+
+#fileInput { display:none; }
 </style>
 </head>
 <body>
@@ -959,32 +752,30 @@ select { width: 100%; cursor: pointer; }
 <div class="toast" id="toast"></div>
 <input type="file" id="fileInput" accept=".pdf,.txt,.md,.csv,.docx,.pptx,.epub"/>
 
-<!-- ═══════════ HEADER ═══════════ -->
+<!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
 <header>
-  <div class="logo">
-    STOICA <span class="sep">|</span> <span class="sub">Reader</span>
-    <span class="badge-v">v4.2</span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <button class="ibtn" id="bNavToggle" title="Mostrar/ocultar menú" style="font-size:1rem">☰</button>
+    <div class="logo">
+      STOICA <span class="sep">|</span>
+      <span class="sub">Reader</span>
+      <span class="badge-v">v4.3</span>
+    </div>
   </div>
   <div class="hdr-r">
-    <button class="ibtn" id="bTheme"  title="Claro / Oscuro">🌙</button>
-    <button class="ibtn" id="bFS"     title="Pantalla completa">⛶</button>
-    <button class="ibtn" id="bSide"   title="Panel lateral">▐</button>
-    <button class="ibtn" id="bFloat"  title="Control flotante">⊕</button>
+    <button class="ibtn" id="bTheme"   title="Claro / Oscuro">🌙</button>
+    <button class="ibtn" id="bPalette" title="Personalizar colores" style="font-size:.75rem">🎨</button>
+    <button class="ibtn" id="bFS"      title="Pantalla completa">⛶</button>
+    <button class="ibtn" id="bSide"    title="Panel lateral">▐</button>
+    <button class="ibtn" id="bFloat"   title="Control flotante">⊕</button>
   </div>
 </header>
 
-<!-- ═══════════ TABS ═══════════ -->
-<div class="tabs">
-  <button class="tab on"  data-tab="reader">📖 Lector</button>
-  <button class="tab"     data-tab="voices">🎙 Voces</button>
-  <button class="tab"     data-tab="notes">📝 Notas</button>
-  <button class="tab"     data-tab="summary">📋 Resumen</button>
-  <button class="tab"     data-tab="questions">❓ Preguntas</button>
-  <button class="tab"     data-tab="tools">🔧 Herramientas</button>
-  <button class="tab"     data-tab="translate">🌐 Traducción</button>
-</div>
-
-<!-- ═══════════ TOOLBAR ═══════════ -->
+<!-- ═══════════════════════════════════════
+     TOOLBAR
+═══════════════════════════════════════ -->
 <div class="bar">
   <button class="btn pri" id="bFile">📂 Cargar archivo</button>
   <button class="btn g"   id="bPaste">📋 Pegar texto</button>
@@ -1019,11 +810,13 @@ select { width: 100%; cursor: pointer; }
     <input type="text" id="srchInput" placeholder="Buscar en el texto…"/>
     <button class="ibtn" id="bSrchPrev" style="border:none;width:20px;height:20px">◀</button>
     <button class="ibtn" id="bSrchNext" style="border:none;width:20px;height:20px">▶</button>
-    <span id="srchInfo" style="font-family:var(--fMono);font-size:.56rem;color:var(--muted);white-space:nowrap"></span>
+    <span id="srchInfo" style="font-family:var(--fMono);font-size:.57rem;color:var(--c-muted);white-space:nowrap"></span>
   </div>
 </div>
 
-<!-- ═══════════ STATS ═══════════ -->
+<!-- ═══════════════════════════════════════
+     STATS + PROGRESS
+═══════════════════════════════════════ -->
 <div class="stats">
   <span>Palabras: <b id="sw">0</b></span>
   <span>Páginas: <b id="sp">0</b></span>
@@ -1031,288 +824,285 @@ select { width: 100%; cursor: pointer; }
   <span>Avance: <b id="spos">0%</b></span>
   <span id="statPill" class="pill">Detenido</span>
 </div>
-
-<!-- ═══════════ PROGRESS ═══════════ -->
 <div class="pbwrap">
-  <div class="pbtrack" id="pbtrack" title="Clic para saltar a esa posición">
+  <div class="pbtrack" id="pbtrack">
     <div class="pbfill" id="pbfill"></div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-   TAB: LECTOR
-════════════════════════════════════════ -->
-<div class="tpane on" id="tab-reader">
-  <div class="layout">
-    <div class="rpane" id="rPane">
-      <div id="textDisplay" class="mt"></div>
+<!-- ═══════════════════════════════════════
+     SHELL: SIDEBAR + CONTENT
+═══════════════════════════════════════ -->
+<div class="shell">
+
+  <!-- ╔═══════════════════════════════════
+       SIDEBAR — NotebookLM style
+  ═══════════════════════════════════╗ -->
+  <nav class="nav-sidebar" id="navSidebar">
+
+    <!-- GROUP: LECTOR -->
+    <div class="nav-group">
+      <div class="nav-group-label">Contenido</div>
+      <button class="nav-item on" data-view="reader">
+        <span class="nav-icon">📖</span> Lector
+      </button>
+      <button class="nav-item" data-view="notes">
+        <span class="nav-icon">📝</span> Mis Notas
+        <span class="nav-badge" id="notesBadge">0</span>
+      </button>
+      <button class="nav-item" data-view="voices">
+        <span class="nav-icon">🎙</span> Configurar Voz
+      </button>
     </div>
-    <aside class="side" id="sideP">
-      <div class="sinner">
-        <!-- Voz activa -->
-        <div class="card">
-          <h3>🎙 Voz activa</h3>
-          <select id="voiceSel"></select>
-          <div class="sl-lbl"><span>Velocidad</span><b id="rV">1.0×</b></div>
-          <input type="range" id="rRate" min=".5" max="2.5" step=".1" value="1"/>
-          <div class="sl-lbl"><span>Tono</span><b id="pV">1.0</b></div>
-          <input type="range" id="rPitch" min=".5" max="2" step=".1" value="1"/>
-          <div class="sl-lbl"><span>Volumen</span><b id="vV">100%</b></div>
-          <input type="range" id="rVol" min="0" max="1" step=".05" value="1"/>
-          <button class="btn g" onclick="goTab('voices')" style="font-size:.55rem">→ Gestionar todas las voces</button>
+
+    <!-- GROUP: ANÁLISIS -->
+    <div class="nav-group">
+      <div class="nav-group-label">Análisis</div>
+      <button class="nav-item" data-view="summary">
+        <span class="nav-icon">📋</span> Resumen
+      </button>
+      <button class="nav-item" data-view="questions">
+        <span class="nav-icon">❓</span> Preguntas
+      </button>
+      <button class="nav-item" data-view="tools">
+        <span class="nav-icon">🔬</span> Mapa conceptual
+      </button>
+    </div>
+
+    <!-- GROUP: UTILIDADES -->
+    <div class="nav-group">
+      <div class="nav-group-label">Utilidades</div>
+      <button class="nav-item" data-view="translate">
+        <span class="nav-icon">🌐</span> Traducción
+      </button>
+    </div>
+
+    <!-- BOTTOM: quick actions -->
+    <div class="nav-bottom">
+      <button class="btn g" id="bNavPalette" style="font-size:.72rem;justify-content:flex-start;gap:8px">🎨 Personalizar colores</button>
+    </div>
+
+  </nav>
+
+  <!-- ╔═══════════════════════════════════
+       CONTENT AREA
+  ═══════════════════════════════════╗ -->
+  <div class="content-area">
+
+    <!-- ══ VIEW: LECTOR ══════════════════ -->
+    <div class="tpane on" id="tab-reader">
+      <div class="reader-shell">
+        <div class="rpane" id="rPane">
+          <div id="textDisplay" class="mt"></div>
         </div>
-        <!-- Exportar audio -->
-        <div class="card">
-          <h3>🔊 Exportar audio</h3>
-          <input type="text" id="audioName" placeholder="nombre-del-archivo"/>
-          <button class="btn teal" id="bExport">⬇ Iniciar grabación</button>
-          <button class="btn danger" id="bStopRec" style="display:none">⏹ Detener y guardar</button>
-          <div id="recStatus" style="display:none">
-            <span class="rec-badge"><span class="rec-dot"></span>Grabando…</span>
+        <aside class="side" id="sideP">
+          <div class="sinner">
+            <div class="card">
+              <h3>🎙 Voz activa</h3>
+              <select id="voiceSel"></select>
+              <div class="sl-lbl"><span>Velocidad</span><b id="rV">1.0×</b></div>
+              <input type="range" id="rRate" min=".5" max="2.5" step=".1" value="1"/>
+              <div class="sl-lbl"><span>Tono</span><b id="pV">1.0</b></div>
+              <input type="range" id="rPitch" min=".5" max="2" step=".1" value="1"/>
+              <div class="sl-lbl"><span>Volumen</span><b id="vV">100%</b></div>
+              <input type="range" id="rVol" min="0" max="1" step=".05" value="1"/>
+              <button class="btn g" onclick="goView('voices')" style="font-size:.65rem">→ Gestionar voces</button>
+            </div>
+            <div class="card">
+              <h3>🔊 Exportar audio</h3>
+              <input type="text" id="audioName" placeholder="nombre-del-archivo"/>
+              <button class="btn teal" id="bExport">⬇ Iniciar grabación</button>
+              <button class="btn danger" id="bStopRec" style="display:none">⏹ Detener y guardar</button>
+              <div id="recStatus" style="display:none"><span class="rec-badge"><span class="rec-dot"></span>Grabando…</span></div>
+              <p style="font-family:var(--fMono);font-size:.54rem;color:var(--c-muted);line-height:1.6">Comparte la pestaña con audio habilitado.</p>
+            </div>
+            <div class="card">
+              <h3>🌐 Traducción rápida</h3>
+              <select id="sdest">
+                <option value="es">→ Español</option><option value="en">→ Inglés</option>
+                <option value="fr">→ Francés</option><option value="de">→ Alemán</option>
+                <option value="pt">→ Portugués</option>
+              </select>
+              <button class="btn pri" id="bQTrans">🌐 Traducir texto</button>
+            </div>
           </div>
-          <p style="font-family:var(--fMono);font-size:.54rem;color:var(--muted);line-height:1.6">
-            Comparte la pestaña y activa "Compartir audio de la pestaña".
-          </p>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: NOTAS ══════════════════ -->
+    <div class="tpane" id="tab-notes">
+      <div class="pinner">
+        <div class="phead">
+          <h2>📝 Mis Notas</h2>
+          <p>Fragmentos guardados desde el lector. Selecciona texto → pulsa "💾 Nota".</p>
+          <button class="btn g" id="bClearNotes" style="margin-left:auto">🗑 Limpiar todo</button>
+          <button class="btn g" id="bExNotesTxt">⬇ TXT</button>
         </div>
-        <!-- Traducción rápida -->
-        <div class="card">
-          <h3>🌐 Traducción rápida</h3>
-          <select id="sdest">
-            <option value="es">→ Español</option>
-            <option value="en">→ Inglés</option>
-            <option value="fr">→ Francés</option>
-            <option value="de">→ Alemán</option>
-            <option value="pt">→ Portugués</option>
+        <p id="emptyN" style="font-family:var(--fSans);font-size:.8rem;color:var(--c-muted)">Aún no has guardado notas.</p>
+        <div id="notesCont"></div>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: VOCES ══════════════════ -->
+    <div class="tpane" id="tab-voices">
+      <div class="pinner">
+        <div class="phead">
+          <h2>🎙 Configurar Voz</h2>
+          <p>Selecciona y previsualiza las voces disponibles en tu sistema.</p>
+          <div class="voice-filter">
+            <select id="vLangFilter">
+              <option value="">Todos los idiomas</option>
+              <option value="es">Español</option><option value="en">Inglés</option>
+              <option value="fr">Francés</option><option value="de">Alemán</option>
+              <option value="pt">Portugués</option>
+            </select>
+            <button class="btn g" id="bRefreshVoices">↺ Actualizar</button>
+            <span id="vCount" style="font-family:var(--fMono);font-size:.6rem;color:var(--c-muted)"></span>
+          </div>
+        </div>
+        <div class="infobox">
+          <b>Consejo:</b> Haz clic en una tarjeta para activarla · ▶ para previsualizar · Las voces dependen del sistema operativo.
+        </div>
+        <input type="text" id="previewTxt" placeholder="Texto de prueba para previsualizar voz…" style="max-width:480px"/>
+        <div class="voice-grid" id="voiceGrid"></div>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: RESUMEN ══════════════════ -->
+    <div class="tpane" id="tab-summary">
+      <div class="pinner">
+        <div class="phead">
+          <h2>📋 Resumen automático</h2>
+          <p>Extrae las ideas principales del texto mediante algoritmo TF-IDF, sin internet.</p>
+          <select id="sLevel">
+            <option value="breve">Breve (~5 oraciones)</option>
+            <option value="medio" selected>Intermedio (~10 oraciones)</option>
+            <option value="completo">Detallado (~20 oraciones)</option>
           </select>
-          <button class="btn pri" id="bQTrans">🌐 Traducir texto</button>
+          <button class="btn pri" id="bSumm">✨ Generar</button>
+          <button class="btn g"   id="bCopySumm">📋 Copiar</button>
+          <button class="btn g"   id="bExSumm">⬇ TXT</button>
         </div>
-      </div>
-    </aside>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-   TAB: VOCES
-════════════════════════════════════════ -->
-<div class="tpane" id="tab-voices">
-  <div class="pinner">
-    <div class="phead">
-      <h2>🎙 VOCES DEL SISTEMA</h2>
-      <div class="voice-filter">
-        <select id="vLangFilter">
-          <option value="">Todos los idiomas</option>
-          <option value="es">Español</option>
-          <option value="en">Inglés</option>
-          <option value="fr">Francés</option>
-          <option value="de">Alemán</option>
-          <option value="pt">Portugués</option>
-        </select>
-        <button class="btn g" id="bRefreshVoices">↺ Actualizar</button>
-        <span id="vCount" style="font-family:var(--fMono);font-size:.57rem;color:var(--muted)"></span>
-      </div>
-    </div>
-    <div class="infobox">
-      <b>Selección de voz:</b> Haz clic en una tarjeta para activarla · Usa ▶ para previsualizar · Las voces disponibles dependen del sistema operativo y el navegador.
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-      <input type="text" id="previewTxt" placeholder="Texto de prueba para previsualizar voz…" style="flex:1;max-width:450px"/>
-    </div>
-    <div class="voice-grid" id="voiceGrid"></div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-   TAB: NOTAS
-════════════════════════════════════════ -->
-<div class="tpane" id="tab-notes">
-  <div class="pinner">
-    <div class="phead">
-      <h2>📝 MIS NOTAS</h2>
-      <button class="btn g" id="bClearNotes" style="margin-left:auto">🗑 Limpiar todo</button>
-      <button class="btn g" id="bExNotesTxt">⬇ TXT</button>
-    </div>
-    <p id="emptyN" style="font-family:var(--fMono);font-size:.7rem;color:var(--muted)">
-      Selecciona texto en el lector → pulsa "💾 Nota" en la barra de herramientas.
-    </p>
-    <div id="notesCont"></div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-   TAB: RESUMEN
-════════════════════════════════════════ -->
-<div class="tpane" id="tab-summary">
-  <div class="pinner">
-    <div class="phead">
-      <h2>📋 RESUMEN AUTOMÁTICO</h2>
-      <select id="sLevel">
-        <option value="breve">Breve (~5 oraciones)</option>
-        <option value="medio" selected>Intermedio (~10 oraciones)</option>
-        <option value="completo">Detallado (~20 oraciones)</option>
-      </select>
-      <button class="btn pri" id="bSumm">✨ Generar</button>
-      <button class="btn g"   id="bCopySumm">📋 Copiar</button>
-      <button class="btn g"   id="bExSumm">⬇ TXT</button>
-    </div>
-    <div class="infobox">✅ Funciona <b>sin internet</b> — algoritmo extractivo TF-IDF. Sin APIs de pago.</div>
-    <div id="summOut" class="out mt">El resumen aparecerá aquí. Carga un texto y pulsa "Generar".</div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-   TAB: PREGUNTAS
-════════════════════════════════════════ -->
-<div class="tpane" id="tab-questions">
-  <div class="pinner">
-    <div class="phead">
-      <h2>❓ PREGUNTAS DE COMPRENSIÓN</h2>
-      <select id="qType">
-        <option value="literal">Literal</option>
-        <option value="inferencial">Inferencial</option>
-        <option value="mixto" selected>Mixto</option>
-      </select>
-      <input type="number" id="qNum" value="10" min="5" max="30"
-        style="width:52px;border:1px solid var(--bdr);border-radius:var(--r);
-        background:var(--surf2);color:var(--txt);font-family:var(--fMono);font-size:.6rem;padding:5px 7px"/>
-      <button class="btn pri"   id="bGenQ">✨ Generar</button>
-      <button class="btn g"     id="bCopyQ">📋 Copiar</button>
-      <button class="btn amber" id="bExQDocx">⬇ Word</button>
-      <button class="btn teal"  id="bExQXlsx">⬇ Excel</button>
-    </div>
-    <div class="infobox">✅ Generación <b>sin internet</b>. Exporta a Word (.docx) o Excel (.xlsx) directamente.</div>
-    <div id="questOut"></div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-   TAB: HERRAMIENTAS (ex Mapa)
-════════════════════════════════════════ -->
-<div class="tpane" id="tab-tools">
-  <div class="pinner">
-    <div class="phead">
-      <h2>🔧 HERRAMIENTAS DE ANÁLISIS</h2>
-      <button class="btn pri" id="bGenAll">✨ Analizar texto</button>
-    </div>
-    <div class="infobox">✅ Análisis TF-IDF <b>sin internet</b>. Genera mapa mental, jerarquía conceptual, cuadro comparativo e ideas clave.</div>
-
-    <div class="tool-tabs" id="toolTabsBar">
-      <button class="tool-tab on" data-tpane="tp-map">🗺 Mapa mental</button>
-      <button class="tool-tab"    data-tpane="tp-hier">🏗 Jerarquía</button>
-      <button class="tool-tab"    data-tpane="tp-comp">⚖️ Comparativo</button>
-      <button class="tool-tab"    data-tpane="tp-ideas">💡 Ideas clave</button>
-    </div>
-
-    <!-- Mapa mental -->
-    <div class="tool-pane on" id="tp-map">
-      <div class="mm-canvas" id="mmOut">
-        <span style="font-family:var(--fMono);font-size:.68rem;color:var(--muted)">
-          Carga un texto y pulsa "✨ Analizar texto" para generar el mapa mental.
-        </span>
+        <div class="infobox">✅ Funciona <b>sin internet</b> — algoritmo extractivo TF-IDF.</div>
+        <div id="summOut" class="out mt">El resumen aparecerá aquí.</div>
       </div>
     </div>
 
-    <!-- Jerarquía -->
-    <div class="tool-pane" id="tp-hier">
-      <div class="hier-wrap" id="hierOut">
-        <span style="font-family:var(--fMono);font-size:.68rem;color:var(--muted)">La jerarquía conceptual aparecerá aquí.</span>
+    <!-- ══ VIEW: PREGUNTAS ══════════════════ -->
+    <div class="tpane" id="tab-questions">
+      <div class="pinner">
+        <div class="phead">
+          <h2>❓ Preguntas de comprensión</h2>
+          <p>Genera preguntas literales, inferenciales o mixtas a partir del texto cargado.</p>
+          <select id="qType">
+            <option value="literal">Literal</option>
+            <option value="inferencial">Inferencial</option>
+            <option value="mixto" selected>Mixto</option>
+          </select>
+          <input type="number" id="qNum" value="10" min="5" max="30"
+            style="width:52px;border:1px solid var(--c-bdr);border-radius:var(--r);background:var(--c-surf2);color:var(--c-txt);font-family:var(--fMono);font-size:.62rem;padding:5px 7px"/>
+          <button class="btn pri"   id="bGenQ">✨ Generar</button>
+          <button class="btn g"     id="bCopyQ">📋 Copiar</button>
+          <button class="btn amber" id="bExQDocx">⬇ Word</button>
+          <button class="btn teal"  id="bExQXlsx">⬇ Excel</button>
+        </div>
+        <div class="infobox">✅ Generación <b>sin internet</b>. Exporta a .docx o .xlsx.</div>
+        <div id="questOut"></div>
       </div>
     </div>
 
-    <!-- Comparativo -->
-    <div class="tool-pane" id="tp-comp">
-      <div class="comp-wrap">
-        <div id="compOut">
-          <span style="font-family:var(--fMono);font-size:.68rem;color:var(--muted)">El cuadro comparativo aparecerá aquí.</span>
+    <!-- ══ VIEW: HERRAMIENTAS / MAPA ══════════════════ -->
+    <div class="tpane" id="tab-tools">
+      <div class="pinner">
+        <div class="phead">
+          <h2>🔬 Mapa conceptual</h2>
+          <p>Análisis TF-IDF del texto: mapa mental, jerarquía, cuadro comparativo e ideas clave.</p>
+          <button class="btn pri" id="bGenAll">✨ Analizar texto</button>
+        </div>
+        <div class="infobox">✅ Análisis <b>sin internet</b> mediante TF-IDF local.</div>
+        <div class="tool-tabs" id="toolTabsBar">
+          <button class="tool-tab on" data-tpane="tp-map">🗺 Mapa mental</button>
+          <button class="tool-tab"    data-tpane="tp-hier">🏗 Jerarquía</button>
+          <button class="tool-tab"    data-tpane="tp-comp">⚖️ Comparativo</button>
+          <button class="tool-tab"    data-tpane="tp-ideas">💡 Ideas clave</button>
+        </div>
+        <div class="tool-pane on" id="tp-map">
+          <div class="mm-canvas" id="mmOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">Pulsa "✨ Analizar texto" para generar el mapa mental.</span></div>
+        </div>
+        <div class="tool-pane" id="tp-hier">
+          <div class="hier-wrap" id="hierOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">La jerarquía conceptual aparecerá aquí.</span></div>
+        </div>
+        <div class="tool-pane" id="tp-comp">
+          <div class="comp-wrap"><div id="compOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">El cuadro comparativo aparecerá aquí.</span></div></div>
+        </div>
+        <div class="tool-pane" id="tp-ideas">
+          <div class="idea-list" id="ideasOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">Las ideas clave aparecerán aquí.</span></div>
         </div>
       </div>
     </div>
 
-    <!-- Ideas clave -->
-    <div class="tool-pane" id="tp-ideas">
-      <div class="idea-list" id="ideasOut">
-        <span style="font-family:var(--fMono);font-size:.68rem;color:var(--muted)">Las ideas clave aparecerán aquí.</span>
+    <!-- ══ VIEW: TRADUCCIÓN ══════════════════ -->
+    <div class="tpane" id="tab-translate">
+      <div class="pinner" style="height:100%">
+        <div class="phead">
+          <h2>🌐 Traducción</h2>
+          <p>Motor multi-API gratuito en cascada: LibreTranslate → MyMemory → Lingva.</p>
+          <select id="tSrc" style="min-width:110px">
+            <option value="auto">Detectar idioma</option>
+            <option value="es">Español</option><option value="en">Inglés</option>
+            <option value="fr">Francés</option><option value="de">Alemán</option>
+            <option value="pt">Portugués</option><option value="it">Italiano</option>
+            <option value="ru">Ruso</option><option value="zh">Chino</option>
+            <option value="ar">Árabe</option><option value="ja">Japonés</option>
+          </select>
+          <span style="font-family:var(--fMono);color:var(--c-muted)">→</span>
+          <select id="tDest" style="min-width:110px">
+            <option value="es" selected>Español</option><option value="en">Inglés</option>
+            <option value="fr">Francés</option><option value="de">Alemán</option>
+            <option value="pt">Portugués</option><option value="it">Italiano</option>
+            <option value="ru">Ruso</option><option value="zh">Chino</option>
+            <option value="ar">Árabe</option><option value="ja">Japonés</option>
+          </select>
+          <button class="btn pri" id="bTransAll">🌐 Traducir todo</button>
+          <button class="btn g"   id="bTransSel">🌐 Selección</button>
+          <button class="btn g"   id="bCopyTrans">📋 Copiar</button>
+        </div>
+        <div class="infobox warn"><b>APIs gratuitas:</b> LibreTranslate (ilimitado) → MyMemory (10K pal/día) → Lingva. Sin registro ni clave.</div>
+        <div class="tgrid" style="flex:1">
+          <div class="tcol"><div class="tlbl">TEXTO ORIGINAL</div><div id="tOrig" class="out mt" style="flex:1">El texto original aparecerá aquí.</div></div>
+          <div class="tcol"><div class="tlbl">TRADUCCIÓN</div><div id="tOut" class="out mt" style="flex:1">La traducción aparecerá aquí.</div></div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ════════════════════════════════════════
-   TAB: TRADUCCIÓN
-════════════════════════════════════════ -->
-<div class="tpane" id="tab-translate">
-  <div class="pinner" style="height:100%">
-    <div class="phead">
-      <h2>🌐 TRADUCCIÓN</h2>
-      <select id="tSrc" style="min-width:110px">
-        <option value="auto">Detectar</option>
-        <option value="es">Español</option>
-        <option value="en">Inglés</option>
-        <option value="fr">Francés</option>
-        <option value="de">Alemán</option>
-        <option value="pt">Portugués</option>
-        <option value="it">Italiano</option>
-        <option value="ru">Ruso</option>
-        <option value="zh">Chino</option>
-        <option value="ar">Árabe</option>
-        <option value="ja">Japonés</option>
-      </select>
-      <span style="font-family:var(--fMono);color:var(--muted)">→</span>
-      <select id="tDest" style="min-width:110px">
-        <option value="es" selected>Español</option>
-        <option value="en">Inglés</option>
-        <option value="fr">Francés</option>
-        <option value="de">Alemán</option>
-        <option value="pt">Portugués</option>
-        <option value="it">Italiano</option>
-        <option value="ru">Ruso</option>
-        <option value="zh">Chino</option>
-        <option value="ar">Árabe</option>
-        <option value="ja">Japonés</option>
-      </select>
-      <button class="btn pri" id="bTransAll">🌐 Traducir todo</button>
-      <button class="btn g"   id="bTransSel">🌐 Selección</button>
-      <button class="btn g"   id="bCopyTrans">📋 Copiar</button>
-    </div>
-    <div class="infobox warn">
-      <b>Motor de traducción:</b> Usa múltiples APIs gratuitas en cascada — LibreTranslate (ilimitado) → MyMemory (10.000 pal./día) → Lingva. Sin registro ni clave.
-    </div>
-    <div class="tgrid" style="flex:1">
-      <div class="tcol">
-        <div class="tlbl">TEXTO ORIGINAL</div>
-        <div id="tOrig" class="out mt" style="flex:1">El texto original aparecerá aquí.</div>
-      </div>
-      <div class="tcol">
-        <div class="tlbl">TRADUCCIÓN</div>
-        <div id="tOut" class="out mt" style="flex:1">La traducción aparecerá aquí.</div>
-      </div>
-    </div>
-  </div>
-</div>
+  </div><!-- /content-area -->
+</div><!-- /shell -->
 
-<!-- ════════════════════════════════════════
-   TTS BAR
-════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════
+     TTS BAR
+═══════════════════════════════════════ -->
 <div class="ttsbar">
   <button class="pbig sel" id="bSel"  title="Leer selección">◈</button>
   <button class="pbig"     id="bPlay" title="Reproducir / Pausar">▶</button>
-  <button class="ibtn"     id="bStop" title="Detener" style="width:38px;height:38px;font-size:.88rem">⏹</button>
+  <button class="ibtn"     id="bStop" title="Detener" style="width:38px;height:38px;font-size:.9rem">⏹</button>
   <div class="hint">Espacio = pausar · Esc = detener · ◈ = leer selección</div>
 </div>
 
-<!-- ═══ CONTROL FLOTANTE ═══ -->
+<!-- CONTROL FLOTANTE -->
 <div id="fc" class="off">
   <div class="fcdrg" id="fcdrag">⋮⋮</div>
   <button class="fcbtn r" id="fc-p">▶</button>
   <button class="fcbtn"   id="fc-s">⏹</button>
   <div class="fcspd" id="fcspd">1.0×</div>
-  <button class="fcbtn" id="fc-sl" title="Más lento">🐢</button>
-  <button class="fcbtn" id="fc-fa" title="Más rápido">⚡</button>
+  <button class="fcbtn" id="fc-sl">🐢</button>
+  <button class="fcbtn" id="fc-fa">⚡</button>
 </div>
 
-<!-- ═══ MODAL PEGAR ═══ -->
+<!-- MODAL PEGAR -->
 <div class="ov" id="pasteOv">
   <div class="modal">
-    <h2>📋 Pegar texto</h2>
+    <div class="modal-title">📋 Pegar texto</div>
     <textarea id="pasteA" placeholder="Pega aquí tu texto…"></textarea>
     <div class="mfooter">
       <button class="btn g"   id="bCancelP">Cancelar</button>
@@ -1321,29 +1111,78 @@ select { width: 100%; cursor: pointer; }
   </div>
 </div>
 
-<!-- ═══ LIBRARIES ═══ -->
+<!-- MODAL PERSONALIZACIÓN -->
+<div class="ov" id="paletteOv">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-title">🎨 Personalización visual</div>
+
+    <!-- SECTION: Paletas predefinidas -->
+    <div class="section-title">Paletas predefinidas</div>
+    <div class="palette-grid" id="paletteGrid"></div>
+
+    <!-- SECTION: Personalización avanzada -->
+    <div class="section-title" style="margin-top:8px">Personalización avanzada</div>
+    <div class="custom-section" id="customSection">
+      <div class="custom-row">
+        <label>Color primario (botones, enlaces, activos)</label>
+        <input type="color" id="cp-pri" title="Color primario"/>
+      </div>
+      <div class="custom-row">
+        <label>Color secundario / Dorado</label>
+        <input type="color" id="cp-sec" title="Color secundario"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de resaltado de texto</label>
+        <input type="color" id="cp-hi" title="Color de resaltado"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de fondo principal</label>
+        <input type="color" id="cp-bg" title="Color de fondo"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de texto principal</label>
+        <input type="color" id="cp-txt" title="Color de texto"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de encabezados</label>
+        <input type="color" id="cp-head" title="Color de encabezados"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de menús / navegación</label>
+        <input type="color" id="cp-menu" title="Color de menús"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de tarjetas / contenedores</label>
+        <input type="color" id="cp-card" title="Color de tarjetas"/>
+      </div>
+      <div class="custom-row">
+        <label>Color de bordes</label>
+        <input type="color" id="cp-bdr" title="Color de bordes"/>
+      </div>
+    </div>
+
+    <div class="mfooter">
+      <button class="btn g" id="bResetPalette">↺ Restaurar predeterminado</button>
+      <button class="btn g" id="bClosePalette">Cerrar</button>
+      <button class="btn pri" id="bApplyCustom">✓ Aplicar colores</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARIES -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 
 <script>
-/* ════════════════════════════════════════════════════════════
-   STOICA READER v4.2 — ACADEMIC EDITION
-   ────────────────────────────────────────────────────────────
-   Cambios v4.2:
-   • Paleta académica sobria (azul institucional / teal / ámbar)
-   • Tipografía: Source Serif 4 + IBM Plex Sans + IBM Plex Mono
-   • Sección "Herramientas" (ex Mapa) rediseñada completamente
-   • Traducción multi-API: LibreTranslate → MyMemory → Lingva
-   • Voz por defecto: Google Español (Estados Unidos)
-   • Jerarquía, comparativo e ideas clave mejorados visualmente
-════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   STOICA READER v4.3 — COLOR SYSTEM + NotebookLM NAVIGATION
+═══════════════════════════════════════════════════════════════ */
 
-// ── UTILIDADES ───────────────────────────────────────
 const $ = id => document.getElementById(id);
 const qs = (s, ctx=document) => ctx.querySelector(s);
 const E  = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-function toast(msg, dur=2700){
+function toast(msg, dur=2800){
   const t=$('toast'); t.textContent=msg;
   t.classList.add('on');
   clearTimeout(t._t);
@@ -1353,30 +1192,11 @@ function load(pct){
   $('lb').style.width=pct+'%';
   if(pct>=100) setTimeout(()=>$('lb').style.width='0%',500);
 }
-function dl(text, name){
-  const b=new Blob([text],{type:'text/plain;charset=utf-8'});
-  const u=URL.createObjectURL(b);
-  Object.assign(document.createElement('a'),{href:u,download:name}).click();
-  URL.revokeObjectURL(u);
-}
-function dlBlob(blob, name){
-  const u=URL.createObjectURL(blob);
-  Object.assign(document.createElement('a'),{href:u,download:name}).click();
-  setTimeout(()=>URL.revokeObjectURL(u), 2000);
-}
-function debounce(fn, ms){
-  let t; return function(...a){ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); };
-}
-function goTab(name){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('.tpane').forEach(x=>x.classList.remove('on'));
-  const t=qs(`[data-tab="${name}"]`);
-  if(t) t.classList.add('on');
-  $('tab-'+name)?.classList.add('on');
-}
-window.goTab=goTab;
+function dl(text, name){ const b=new Blob([text],{type:'text/plain;charset=utf-8'}); const u=URL.createObjectURL(b); Object.assign(document.createElement('a'),{href:u,download:name}).click(); URL.revokeObjectURL(u); }
+function dlBlob(blob, name){ const u=URL.createObjectURL(blob); Object.assign(document.createElement('a'),{href:u,download:name}).click(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+function debounce(fn,ms){ let t; return function(...a){ clearTimeout(t); t=setTimeout(()=>fn(...a),ms); }; }
 
-// ── ESTADO ───────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────
 let fullText='';
 let wordEls=[];
 let curW=0;
@@ -1384,42 +1204,38 @@ let synth=window.speechSynthesis;
 let voices=[];
 let utt=null;
 let playing=false, paused=false;
-let notes=JSON.parse(localStorage.getItem('sr_notes_v42')||'[]');
+let notes=JSON.parse(localStorage.getItem('sr_notes_v43')||'[]');
 let mediaRec=null, recChunks=[], recording=false;
 let keepTimer=null;
 let srchMatches=[], srchIdx=0;
 let lastQs=[];
 let lastMapData=null;
 
-// ── PDF.js ───────────────────────────────────────────
-pdfjsLib.GlobalWorkerOptions.workerSrc=
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// ── PDF.js ────────────────────────────────────────────
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// ── TEMA ─────────────────────────────────────────────
-$('bTheme').onclick=()=>{
-  const dark=document.documentElement.dataset.theme==='dark';
-  document.documentElement.dataset.theme=dark?'light':'dark';
-  $('bTheme').textContent=dark?'🌙':'☀️';
-};
-$('bFS').onclick=()=>{
-  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
-  else document.exitFullscreen();
-};
-$('bSide').onclick=()=>$('sideP').classList.toggle('off');
-$('bFloat').onclick=()=>$('fc').classList.toggle('off');
-$('sfont').onchange=()=>document.documentElement.style.setProperty('--fBody',$('sfont').value);
-$('ssize').onchange=()=>document.documentElement.style.setProperty('--fs',$('ssize').value);
-$('slh').onchange=()=>document.documentElement.style.setProperty('--lh',$('slh').value);
+// ════════════════════════════════════════════════════════
+// NAVIGATION — NotebookLM style sidebar
+// ════════════════════════════════════════════════════════
+function goView(name){
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.tpane').forEach(x=>x.classList.remove('on'));
+  const ni=qs(`.nav-item[data-view="${name}"]`);
+  if(ni) ni.classList.add('on');
+  $('tab-'+name)?.classList.add('on');
+  // On mobile: collapse sidebar
+  if(window.innerWidth<640) $('navSidebar').classList.add('collapsed');
+}
+window.goView=goView;
+// Compat alias
+window.goTab=goView;
 
-// ── TABS NAVIGATION ──────────────────────────────────
-document.querySelectorAll('.tab').forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
-    document.querySelectorAll('.tpane').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on');
-    $('tab-'+t.dataset.tab)?.classList.add('on');
-  };
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.onclick=()=>goView(item.dataset.view);
 });
+
+$('bNavToggle').onclick=()=>$('navSidebar').classList.toggle('collapsed');
+$('bNavPalette').onclick=()=>openPaletteModal();
 
 // ── TOOL SUB-TABS ─────────────────────────────────────
 document.querySelectorAll('.tool-tab').forEach(t=>{
@@ -1431,31 +1247,224 @@ document.querySelectorAll('.tool-tab').forEach(t=>{
   };
 });
 
+// ── HEADER BUTTONS ────────────────────────────────────
+$('bFS').onclick=()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); };
+$('bSide').onclick=()=>$('sideP').classList.toggle('off');
+$('bFloat').onclick=()=>$('fc').classList.toggle('off');
+$('sfont').onchange=()=>document.documentElement.style.setProperty('--fBody',$('sfont').value);
+$('ssize').onchange=()=>document.documentElement.style.setProperty('--fs',$('ssize').value);
+$('slh').onchange=()=>document.documentElement.style.setProperty('--lh',$('slh').value);
+
 // ════════════════════════════════════════════════════════
-// CARGA DE TEXTO — Multiformato
+// THEME — Dark/Light toggle
+// ════════════════════════════════════════════════════════
+function getCurrentTheme(){ return document.documentElement.dataset.theme||'dark'; }
+function getCurrentPalette(){ return document.documentElement.dataset.palette||'default'; }
+
+$('bTheme').onclick=()=>{
+  const dark=getCurrentTheme()==='dark';
+  document.documentElement.dataset.theme=dark?'light':'dark';
+  $('bTheme').textContent=dark?'☀️':'🌙';
+  saveThemePrefs();
+};
+$('bPalette').onclick=()=>openPaletteModal();
+
+function saveThemePrefs(){
+  localStorage.setItem('sr_theme_v43', JSON.stringify({
+    theme: getCurrentTheme(),
+    palette: getCurrentPalette()
+  }));
+}
+
+// Load saved theme
+(()=>{
+  const saved=JSON.parse(localStorage.getItem('sr_theme_v43')||'{}');
+  if(saved.theme){ document.documentElement.dataset.theme=saved.theme; $('bTheme').textContent=saved.theme==='dark'?'🌙':'☀️'; }
+  if(saved.palette) document.documentElement.dataset.palette=saved.palette;
+  // Load custom CSS vars
+  const custom=JSON.parse(localStorage.getItem('sr_custom_colors_v43')||'null');
+  if(custom) applyCustomVars(custom);
+})();
+
+// ════════════════════════════════════════════════════════
+// PALETTE / COLOR SYSTEM
+// ════════════════════════════════════════════════════════
+const PALETTES=[
+  {
+    id:'default',  name:'Azul & Dorado',   desc:'Clásico académico',
+    dark:  ['#0b0c10','#4f85e8','#c9a64a','#4caf80'],
+    light: ['#ffffff','#2d65c2','#a8883a','#258f7c']
+  },
+  {
+    id:'sapphire', name:'Zafiro profundo',  desc:'Azul-violeta nocturno',
+    dark:  ['#08090f','#7b9df5','#f0b060','#4ac4b2'],
+    light: ['#f0f2ff','#3b58cc','#c08830','#3b8cc0']
+  },
+  {
+    id:'forest',   name:'Bosque académico', desc:'Verde & ámbar natural',
+    dark:  ['#070c08','#4caf80','#d4a84b','#38b2a0'],
+    light: ['#f5faf7','#2d7f56','#9a7530','#258f7c']
+  },
+  {
+    id:'crimson',  name:'Carmesí',          desc:'Rojo cálido intenso',
+    dark:  ['#100808','#d05858','#d4a84b','#b07040'],
+    light: ['#fff8f8','#a03030','#907030','#c87050']
+  },
+  {
+    id:'obsidian', name:'Obsidiana',         desc:'Mínimal monocromático',
+    dark:  ['#000000','#6688cc','#cc9944','#448888'],
+    light: ['#fafafa','#445588','#8c7030','#388888']
+  },
+  {
+    id:'arctic',   name:'Ártico',           desc:'Gris frío luminoso',
+    dark:  ['#0a0d14','#5577cc','#aa8830','#3a8888'],
+    light: ['#f8f9fc','#4060b8','#8c6e1c','#3a7878']
+  },
+];
+
+function renderPaletteGrid(){
+  const grid=$('paletteGrid');
+  grid.innerHTML='';
+  const currentTheme=getCurrentTheme();
+  const currentPalette=getCurrentPalette();
+  PALETTES.forEach(p=>{
+    const swatches=(currentTheme==='dark'?p.dark:p.light)||p.dark;
+    const card=document.createElement('div');
+    card.className='palette-card'+(currentPalette===p.id?' active':'');
+    card.innerHTML=`
+      <div class="palette-preview">
+        ${swatches.map(c=>`<span style="background:${c}"></span>`).join('')}
+      </div>
+      <div class="palette-name">${E(p.name)}</div>
+      <div class="palette-desc">${E(p.desc)}</div>`;
+    card.onclick=()=>{
+      document.documentElement.dataset.palette=p.id;
+      clearCustomColors();
+      document.querySelectorAll('.palette-card').forEach(x=>x.classList.remove('active'));
+      card.classList.add('active');
+      saveThemePrefs();
+      toast(`✓ Paleta: ${p.name}`);
+    };
+    grid.appendChild(card);
+  });
+}
+
+function openPaletteModal(){
+  renderPaletteGrid();
+  syncCustomInputs();
+  $('paletteOv').classList.add('on');
+}
+
+$('bClosePalette').onclick=()=>$('paletteOv').classList.remove('on');
+$('paletteOv').onclick=e=>{ if(e.target===$('paletteOv')) $('paletteOv').classList.remove('on'); };
+
+$('bResetPalette').onclick=()=>{
+  document.documentElement.dataset.palette='default';
+  clearCustomColors();
+  renderPaletteGrid();
+  toast('✓ Tema restaurado al predeterminado');
+};
+
+// Apply custom CSS variables from color pickers
+$('bApplyCustom').onclick=()=>{
+  const vars={
+    '--c-pri':     $('cp-pri').value,
+    '--c-sec':     $('cp-sec').value,
+    '--c-hi-bdr':  $('cp-hi').value,
+    '--c-hi':      hexToRgba($('cp-hi').value, .25),
+    '--c-hi-now':  $('cp-pri').value,
+    '--c-bg':      $('cp-bg').value,
+    '--c-surf':    lighten($('cp-bg').value, 8),
+    '--c-surf2':   lighten($('cp-bg').value, 14),
+    '--c-surf3':   lighten($('cp-bg').value, 20),
+    '--c-txt':     $('cp-txt').value,
+    '--c-head-txt':$('cp-head').value,
+    '--c-menu-txt':$('cp-menu').value,
+    '--c-card':    $('cp-card').value,
+    '--c-bdr':     $('cp-bdr').value,
+    '--c-bdr2':    lighten($('cp-bdr').value, 10),
+    '--c-link':    lighten($('cp-pri').value, 15),
+    '--c-pri-dim': hexToRgba($('cp-pri').value, .14),
+    '--c-sec-dim': hexToRgba($('cp-sec').value, .12),
+  };
+  applyCustomVars(vars);
+  localStorage.setItem('sr_custom_colors_v43', JSON.stringify(vars));
+  toast('✓ Colores personalizados aplicados');
+};
+
+function applyCustomVars(vars){
+  Object.entries(vars).forEach(([k,v])=>{
+    document.documentElement.style.setProperty(k,v);
+  });
+}
+
+function clearCustomColors(){
+  const customKeys=['--c-pri','--c-sec','--c-hi-bdr','--c-hi','--c-hi-now','--c-bg','--c-surf','--c-surf2','--c-surf3','--c-txt','--c-head-txt','--c-menu-txt','--c-card','--c-bdr','--c-bdr2','--c-link','--c-pri-dim','--c-sec-dim'];
+  customKeys.forEach(k=>document.documentElement.style.removeProperty(k));
+  localStorage.removeItem('sr_custom_colors_v43');
+}
+
+function syncCustomInputs(){
+  const style=getComputedStyle(document.documentElement);
+  const get=v=>rgbToHex(style.getPropertyValue(v).trim());
+  try{
+    $('cp-pri').value  = get('--c-pri');
+    $('cp-sec').value  = get('--c-sec');
+    $('cp-hi').value   = get('--c-hi-bdr');
+    $('cp-bg').value   = get('--c-bg');
+    $('cp-txt').value  = get('--c-txt');
+    $('cp-head').value = get('--c-head-txt');
+    $('cp-menu').value = get('--c-menu-txt');
+    $('cp-card').value = get('--c-card');
+    $('cp-bdr').value  = get('--c-bdr');
+  }catch(e){}
+}
+
+function hexToRgba(hex, alpha){
+  const r=parseInt(hex.slice(1,3),16);
+  const g=parseInt(hex.slice(3,5),16);
+  const b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function lighten(hex, amount){
+  let r=parseInt(hex.slice(1,3),16);
+  let g=parseInt(hex.slice(3,5),16);
+  let b=parseInt(hex.slice(5,7),16);
+  const isDark=getCurrentTheme()==='dark';
+  const d=isDark?amount:-amount;
+  r=Math.max(0,Math.min(255,r+d));
+  g=Math.max(0,Math.min(255,g+d));
+  b=Math.max(0,Math.min(255,b+d));
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+}
+function rgbToHex(val){
+  if(!val) return '#888888';
+  if(val.startsWith('#')) return val.length===7?val:'#888888';
+  const m=val.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if(!m) return '#888888';
+  return '#'+[m[1],m[2],m[3]].map(n=>parseInt(n).toString(16).padStart(2,'0')).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// TEXT LOADING — Multi-format
 // ════════════════════════════════════════════════════════
 function loadText(text, src='Texto'){
   fullText=text.trim();
-  if(!fullText){toast('El texto está vacío.');return;}
+  if(!fullText){ toast('El texto está vacío.'); return; }
   buildSpans(fullText);
   updateStats();
   stopSpeech();
   setProgress(0);
   clearSearch();
-  const n=fullText.split(/\s+/).filter(Boolean).length;
-  toast(`✓ ${src} — ${n.toLocaleString()} palabras`);
+  toast(`✓ ${src} — ${fullText.split(/\s+/).filter(Boolean).length.toLocaleString()} palabras`);
 }
 
 function buildSpans(text){
   const tokens=text.split(/(\s+)/);
   let html=''; let wi=0;
   tokens.forEach(tok=>{
-    if(/\S/.test(tok)){
-      html+=`<span class="w" data-i="${wi}">${E(tok)}</span>`;
-      wi++;
-    } else {
-      html+=tok.replace(/\n/g,'<br/>');
-    }
+    if(/\S/.test(tok)){ html+=`<span class="w" data-i="${wi}">${E(tok)}</span>`; wi++; }
+    else html+=tok.replace(/\n/g,'<br/>');
   });
   const d=$('textDisplay');
   d.innerHTML=html;
@@ -1465,26 +1474,24 @@ function buildSpans(text){
 }
 
 function updateStats(){
-  if(!fullText){$('sw').textContent='0';$('sp').textContent='0';$('st').textContent='0 min';return;}
+  if(!fullText){ $('sw').textContent='0'; $('sp').textContent='0'; $('st').textContent='0 min'; return; }
   const w=fullText.split(/\s+/).filter(Boolean).length;
   $('sw').textContent=w.toLocaleString();
   $('sp').textContent=Math.max(1,Math.ceil(w/250));
   $('st').textContent=Math.max(1,Math.round(w/200))+' min';
 }
 
-// ── FILE INPUT UNIFICADO ──────────────────────────────
 $('bFile').onclick=()=>$('fileInput').click();
 $('fileInput').onchange=async e=>{
-  const file=e.target.files[0]; if(!file)return;
-  const name=file.name.toLowerCase();
-  load(10);
+  const file=e.target.files[0]; if(!file) return;
+  const name=file.name.toLowerCase(); load(10);
   try{
     if(name.endsWith('.pdf'))       await loadPDF(file);
     else if(name.endsWith('.docx')) await loadDOCX(file);
     else if(name.endsWith('.pptx')) await loadPPTX(file);
     else if(name.endsWith('.epub')) await loadEPUB(file);
     else                            await loadTXT(file);
-  }catch(err){toast('Error: '+err.message);load(100);}
+  }catch(err){ toast('Error: '+err.message); load(100); }
   $('fileInput').value='';
 };
 
@@ -1500,23 +1507,16 @@ async function loadPDF(file){
     const page=await pdf.getPage(i);
     const ct=await page.getTextContent();
     if(ct.items.length) hasText=true;
-    let pageText=''; let lastY=null; let lastX=null;
+    let pt=''; let lastY=null; let lastX=null;
     ct.items.forEach(item=>{
       const y=item.transform[5], x=item.transform[4];
-      if(lastY!==null){
-        const dy=Math.abs(y-lastY);
-        if(dy>12) pageText+='\n\n';
-        else if(dy>4) pageText+='\n';
-        else if(x-lastX>20) pageText+=' ';
-      }
-      pageText+=item.str;
-      lastY=y; lastX=x+(item.width||0);
+      if(lastY!==null){ const dy=Math.abs(y-lastY); if(dy>12) pt+='\n\n'; else if(dy>4) pt+='\n'; else if(x-lastX>20) pt+=' '; }
+      pt+=item.str; lastY=y; lastX=x+(item.width||0);
     });
-    text+=pageText.trim()+'\n\n';
-    load(40+Math.round((i/pdf.numPages)*55));
+    text+=pt.trim()+'\n\n'; load(40+Math.round((i/pdf.numPages)*55));
   }
   load(100);
-  if(!hasText){ toast('⚠️ PDF escaneado (imagen). No contiene texto extraíble. Usa OCR primero.',5000); return; }
+  if(!hasText){ toast('⚠️ PDF escaneado (imagen). Usa OCR primero.',5000); return; }
   loadText(text, file.name);
 }
 
@@ -1534,47 +1534,21 @@ async function loadPPTX(file){
   toast('⏳ Leyendo PPTX…',10000);
   try{
     const ab=await file.arrayBuffer(); load(30);
-    const text=await extractPPTXText(ab);
+    const bytes=new Uint8Array(ab);
+    const files=parseZip(bytes);
+    const slideFiles=Object.keys(files).filter(k=>k.match(/^ppt\/slides\/slide\d+\.xml$/)).sort((a,b)=>parseInt(a.match(/\d+/)[0])-parseInt(b.match(/\d+/)[0]));
+    let text='';
+    slideFiles.forEach((sf,i)=>{
+      const xml=new TextDecoder('utf-8').decode(files[sf]);
+      const matches=xml.match(/<a:t[^>]*>([^<]*)<\/a:t>/g)||[];
+      const st=matches.map(m=>m.replace(/<[^>]+>/g,'')).filter(Boolean).join(' ');
+      if(st.trim()) text+=`[Diapositiva ${i+1}]\n${st.trim()}\n\n`;
+      load(30+Math.round((i/slideFiles.length)*65));
+    });
     load(100);
     if(text.trim()) loadText(text, file.name);
     else toast('No se pudo extraer texto del PPTX.');
   }catch(e){ toast('Error PPTX: '+e.message); load(100); }
-}
-
-async function extractPPTXText(ab){
-  const bytes=new Uint8Array(ab);
-  const files=parseZip(bytes);
-  const slideFiles=Object.keys(files)
-    .filter(k=>k.match(/^ppt\/slides\/slide\d+\.xml$/))
-    .sort((a,b)=>parseInt(a.match(/\d+/)[0])-parseInt(b.match(/\d+/)[0]));
-  let text='';
-  slideFiles.forEach((sf,i)=>{
-    const xml=new TextDecoder('utf-8').decode(files[sf]);
-    const matches=xml.match(/<a:t[^>]*>([^<]*)<\/a:t>/g)||[];
-    const slideText=matches.map(m=>m.replace(/<[^>]+>/g,'')).filter(Boolean).join(' ');
-    if(slideText.trim()) text+=`[Diapositiva ${i+1}]\n${slideText.trim()}\n\n`;
-    load(30+Math.round((i/slideFiles.length)*65));
-  });
-  return text;
-}
-
-function parseZip(bytes){
-  const files={};
-  let i=0;
-  const view=new DataView(bytes.buffer);
-  while(i<bytes.length-4){
-    if(view.getUint32(i,true)===0x04034b50){
-      const fnLen=view.getUint16(i+26,true);
-      const extraLen=view.getUint16(i+28,true);
-      const compSize=view.getUint32(i+18,true);
-      const compMethod=view.getUint16(i+8,true);
-      const fname=new TextDecoder().decode(bytes.slice(i+30,i+30+fnLen));
-      const dataStart=i+30+fnLen+extraLen;
-      if(compMethod===0) files[fname]=bytes.slice(dataStart,dataStart+compSize);
-      i=dataStart+compSize;
-    } else { i++; }
-  }
-  return files;
 }
 
 async function loadEPUB(file){
@@ -1582,8 +1556,7 @@ async function loadEPUB(file){
   try{
     const ab=await file.arrayBuffer(); load(30);
     const bytes=new Uint8Array(ab);
-    const zipFiles=parseZip(bytes);
-    load(50);
+    const zipFiles=parseZip(bytes); load(50);
     const htmlFiles=Object.keys(zipFiles).filter(k=>k.match(/\.(html|xhtml|htm)$/i)&&!k.includes('nav'));
     let text='';
     htmlFiles.forEach(hf=>{
@@ -1609,24 +1582,35 @@ async function loadTXT(file){
   });
 }
 
+function parseZip(bytes){
+  const files={}; let i=0;
+  const view=new DataView(bytes.buffer);
+  while(i<bytes.length-4){
+    if(view.getUint32(i,true)===0x04034b50){
+      const fnLen=view.getUint16(i+26,true); const extraLen=view.getUint16(i+28,true);
+      const compSize=view.getUint32(i+18,true); const compMethod=view.getUint16(i+8,true);
+      const fname=new TextDecoder().decode(bytes.slice(i+30,i+30+fnLen));
+      const dataStart=i+30+fnLen+extraLen;
+      if(compMethod===0) files[fname]=bytes.slice(dataStart,dataStart+compSize);
+      i=dataStart+compSize;
+    } else { i++; }
+  }
+  return files;
+}
+
 $('bPaste').onclick=()=>{ $('pasteOv').classList.add('on'); $('pasteA').focus(); };
 $('bCancelP').onclick=()=>{ $('pasteOv').classList.remove('on'); $('pasteA').value=''; };
-$('bConfP').onclick=()=>{
-  const t=$('pasteA').value.trim();
-  if(t) loadText(t,'Texto pegado');
-  $('pasteOv').classList.remove('on'); $('pasteA').value='';
-};
+$('bConfP').onclick=()=>{ const t=$('pasteA').value.trim(); if(t) loadText(t,'Texto pegado'); $('pasteOv').classList.remove('on'); $('pasteA').value=''; };
 $('pasteOv').onclick=e=>{ if(e.target===$('pasteOv')) $('bCancelP').click(); };
 
 // ════════════════════════════════════════════════════════
-// RESALTADO Y NOTAS
+// HIGHLIGHT & NOTES
 // ════════════════════════════════════════════════════════
 $('bHL').onclick=()=>{
   const sel=window.getSelection();
   if(!sel||sel.isCollapsed){ toast('Selecciona texto primero.'); return; }
   const range=sel.getRangeAt(0);
-  const mark=document.createElement('mark');
-  mark.className='hl';
+  const mark=document.createElement('mark'); mark.className='hl';
   try{ range.surroundContents(mark); sel.removeAllRanges(); toast('✓ Texto resaltado'); }
   catch{ toast('Selección inválida.'); }
 };
@@ -1636,9 +1620,13 @@ $('bNote').onclick=()=>{
   if(!txt){ toast('Selecciona texto para guardar como nota.'); return; }
   addNote(txt); sel.removeAllRanges(); toast('✓ Nota guardada');
 };
+
 function addNote(text){ notes.unshift({id:Date.now(),text,date:new Date().toLocaleString('es-CO')}); saveNotes(); renderNotes(); }
-function saveNotes(){ localStorage.setItem('sr_notes_v42',JSON.stringify(notes)); }
+function saveNotes(){ localStorage.setItem('sr_notes_v43',JSON.stringify(notes)); }
+function updateNotesBadge(){ $('notesBadge').textContent=notes.length; $('notesBadge').style.display=notes.length?'':'none'; }
+
 function renderNotes(){
+  updateNotesBadge();
   $('emptyN').style.display=notes.length?'none':'block';
   const c=$('notesCont'); c.innerHTML='';
   notes.forEach(n=>{
@@ -1656,26 +1644,20 @@ function renderNotes(){
   });
 }
 window.editNote=function(id){
-  const n=notes.find(x=>x.id===id); if(!n)return;
+  const n=notes.find(x=>x.id===id); if(!n) return;
   const card=qs(`.ncard[data-id="${id}"]`);
-  const body=qs('.nbody',card);
   const ta=document.createElement('textarea'); ta.className='nta'; ta.value=n.text;
-  body.replaceWith(ta);
-  qs('.nacts',card).innerHTML=`
-    <button class="btn pri" onclick="saveNote(${id})">💾 Guardar</button>
-    <button class="btn g" onclick="renderNotes()">Cancelar</button>`;
+  qs('.nbody',card).replaceWith(ta);
+  qs('.nacts',card).innerHTML=`<button class="btn pri" onclick="saveNote(${id})">💾 Guardar</button><button class="btn g" onclick="renderNotes()">Cancelar</button>`;
 };
 window.saveNote=function(id){
   const ta=qs(`.ncard[data-id="${id}"] textarea`);
   const n=notes.find(x=>x.id===id);
   if(n&&ta){ n.text=ta.value; saveNotes(); renderNotes(); toast('✓ Nota actualizada'); }
 };
-window.delNote=function(id){
-  if(!confirm('¿Eliminar esta nota?'))return;
-  notes=notes.filter(x=>x.id!==id); saveNotes(); renderNotes();
-};
+window.delNote=function(id){ if(!confirm('¿Eliminar esta nota?')) return; notes=notes.filter(x=>x.id!==id); saveNotes(); renderNotes(); };
 window.readNote=function(id){ const n=notes.find(x=>x.id===id); if(n) speak(n.text); };
-$('bClearNotes').onclick=()=>{ if(!confirm('¿Eliminar TODAS las notas?'))return; notes=[]; saveNotes(); renderNotes(); };
+$('bClearNotes').onclick=()=>{ if(!confirm('¿Eliminar TODAS las notas?')) return; notes=[]; saveNotes(); renderNotes(); };
 $('bExNotesTxt').onclick=()=>{
   if(!notes.length){ toast('No hay notas.'); return; }
   dl(notes.map(n=>`[${n.date}]\n${n.text}`).join('\n\n────────\n\n'),'stoica-notas.txt');
@@ -1683,7 +1665,7 @@ $('bExNotesTxt').onclick=()=>{
 renderNotes();
 
 // ════════════════════════════════════════════════════════
-// BÚSQUEDA
+// SEARCH
 // ════════════════════════════════════════════════════════
 function clearSearch(){ srchMatches=[]; srchIdx=0; $('srchInfo').textContent=''; }
 $('srchInput').addEventListener('input',debounce(doSearch,300));
@@ -1702,7 +1684,7 @@ function doSearch(){
   let count=0;
   textNodes.forEach(tn=>{
     const val=tn.nodeValue; const lower=val.toLowerCase();
-    let idx=0, pos;
+    let idx=0; let pos;
     const frag=document.createDocumentFragment();
     while((pos=lower.indexOf(q,idx))!==-1){
       if(pos>idx) frag.appendChild(document.createTextNode(val.slice(idx,pos)));
@@ -1723,40 +1705,24 @@ function highlightSearchCurrent(){
 }
 
 // ════════════════════════════════════════════════════════
-// WEB SPEECH API — VOCES
+// VOICES — Web Speech API
 // ════════════════════════════════════════════════════════
 function loadVoices(){
   voices=synth.getVoices();
   if(!voices.length) return;
-
   const sel=$('voiceSel'); sel.innerHTML='';
-
-  // ── Encontrar Google Español (Estados Unidos) como predeterminado ──
   let defaultIdx=0;
-  const esUSPatterns=['google español estados unidos','google spanish united states','google es-us'];
   voices.forEach((v,i)=>{
     const o=document.createElement('option');
     o.value=i; o.textContent=`${v.name} (${v.lang})`;
     sel.appendChild(o);
-
-    // Detectar Google ES-US
-    const vn=v.name.toLowerCase();
-    const vl=v.lang.toLowerCase();
-    const isGoogleEsUS=
-      (vl==='es-us'&&vn.includes('google'))||
-      (vl.startsWith('es')&&vn.includes('google')&&(vn.includes('estados unidos')||vn.includes('united states')||vl==='es-us'))||
-      esUSPatterns.some(p=>vn.includes(p.split(' ')[1])&&vl.startsWith('es'));
-    if(isGoogleEsUS) defaultIdx=i;
+    const vn=v.name.toLowerCase(); const vl=v.lang.toLowerCase();
+    if((vl==='es-us'&&vn.includes('google'))||(vl.startsWith('es')&&vn.includes('google')&&(vn.includes('estados unidos')||vn.includes('united states')||vl==='es-us'))) defaultIdx=i;
   });
-
-  // Fallback: primera voz en español
-  if(defaultIdx===0){
-    voices.forEach((v,i)=>{ if(v.lang.startsWith('es')&&defaultIdx===0) defaultIdx=i; });
-  }
+  if(defaultIdx===0) voices.forEach((v,i)=>{ if(v.lang.startsWith('es')&&defaultIdx===0) defaultIdx=i; });
   sel.value=defaultIdx;
   renderVoiceGrid();
 }
-
 loadVoices();
 if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged=loadVoices;
 
@@ -1766,43 +1732,31 @@ function renderVoiceGrid(){
   const curIdx=parseInt($('voiceSel').value)||0;
   const filtered=voices.map((v,i)=>({v,i})).filter(({v})=>!filter||v.lang.startsWith(filter));
   $('vCount').textContent=`${filtered.length} voz${filtered.length!==1?'es':''}`;
-
   filtered.forEach(({v,i})=>{
     const card=document.createElement('div');
     card.className='vcard'+(i===curIdx?' sel':'');
     const lc=v.lang.split('-')[0].toLowerCase();
-    const tagCls=(lc==='es')?'es':(lc==='en')?'en':'';
-    const isStar=curIdx===i;
+    const tagCls=lc==='es'?'es':lc==='en'?'en':'';
     card.innerHTML=`
       <div class="vname">${E(v.name)}</div>
       <div class="vlang">${E(v.lang)}</div>
       <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:2px">
         <span class="vtag ${tagCls}">${E(v.lang)}</span>
-        ${v.localService?'<span class="vtag" style="color:var(--acc2);border-color:rgba(61,201,176,.35)">Local</span>':''}
-        ${isStar?'<span class="vtag star">★ Activa</span>':''}
-        <button class="btn g" style="margin-left:auto;padding:2px 7px;font-size:.52rem"
-          onclick="previewVoice(${i})">▶</button>
+        ${v.localService?'<span class="vtag" style="color:var(--c-teal);border-color:rgba(60,191,168,.35)">Local</span>':''}
+        ${i===curIdx?'<span class="vtag star">★ Activa</span>':''}
+        <button class="btn g" style="margin-left:auto;padding:2px 7px;font-size:.55rem" onclick="previewVoice(${i})">▶</button>
       </div>`;
-    card.onclick=e=>{ if(e.target.tagName==='BUTTON')return; selectVoice(i); };
+    card.onclick=e=>{ if(e.target.tagName==='BUTTON') return; selectVoice(i); };
     grid.appendChild(card);
   });
 }
-
-window.selectVoice=function(i){
-  $('voiceSel').value=i;
-  renderVoiceGrid();
-  toast(`✓ Voz activa: ${voices[i]?.name}`);
-};
+window.selectVoice=function(i){ $('voiceSel').value=i; renderVoiceGrid(); toast(`✓ Voz: ${voices[i]?.name}`); };
 window.previewVoice=function(i){
-  const txt=$('previewTxt').value.trim()||
-    'Esta es una prueba de voz para el lector académico Stoica.';
+  const txt=$('previewTxt').value.trim()||'Esta es una prueba de voz. Stoica Reader, herramienta académica.';
   const u=new SpeechSynthesisUtterance(txt);
   if(voices[i]) u.voice=voices[i];
-  u.rate=parseFloat($('rRate').value);
-  u.pitch=parseFloat($('rPitch').value);
-  u.volume=parseFloat($('rVol').value);
-  synth.cancel(); synth.speak(u);
-  toast(`▶ ${voices[i]?.name}`);
+  u.rate=parseFloat($('rRate').value); u.pitch=parseFloat($('rPitch').value); u.volume=parseFloat($('rVol').value);
+  synth.cancel(); synth.speak(u); toast(`▶ ${voices[i]?.name}`);
 };
 $('vLangFilter').onchange=renderVoiceGrid;
 $('bRefreshVoices').onclick=()=>{ loadVoices(); toast('✓ Voces actualizadas'); };
@@ -1812,62 +1766,37 @@ $('rRate').oninput=()=>{ const v=parseFloat($('rRate').value).toFixed(1); $('rV'
 $('rPitch').oninput=()=>$('pV').textContent=parseFloat($('rPitch').value).toFixed(1);
 $('rVol').oninput=()=>$('vV').textContent=Math.round(parseFloat($('rVol').value)*100)+'%';
 
-// ── Utterance ──
+// ── TTS Engine ────────────────────────────────────────
 function makeUtt(text){
   const u=new SpeechSynthesisUtterance(text);
-  u.rate=parseFloat($('rRate').value);
-  u.pitch=parseFloat($('rPitch').value);
-  u.volume=parseFloat($('rVol').value);
+  u.rate=parseFloat($('rRate').value); u.pitch=parseFloat($('rPitch').value); u.volume=parseFloat($('rVol').value);
   const vi=parseInt($('voiceSel').value);
   if(voices[vi]) u.voice=voices[vi];
-
-  u.onstart=()=>{
-    playing=true; paused=false;
-    $('bPlay').textContent='⏸'; $('fc-p').textContent='⏸';
-    $('statPill').textContent='▶ Reproduciendo';
-    $('statPill').className='pill play';
-  };
-  u.onpause=()=>{
-    paused=true;
-    $('bPlay').textContent='▶'; $('fc-p').textContent='▶';
-    $('statPill').textContent='⏸ Pausado';
-    $('statPill').className='pill pause';
-  };
-  u.onresume=()=>{
-    paused=false;
-    $('bPlay').textContent='⏸'; $('fc-p').textContent='⏸';
-    $('statPill').textContent='▶ Reproduciendo';
-    $('statPill').className='pill play';
-  };
+  u.onstart=()=>{ playing=true; paused=false; $('bPlay').textContent='⏸'; $('fc-p').textContent='⏸'; $('statPill').textContent='▶ Reproduciendo'; $('statPill').className='pill play'; };
+  u.onpause=()=>{ paused=true; $('bPlay').textContent='▶'; $('fc-p').textContent='▶'; $('statPill').textContent='⏸ Pausado'; $('statPill').className='pill pause'; };
+  u.onresume=()=>{ paused=false; $('bPlay').textContent='⏸'; $('fc-p').textContent='⏸'; $('statPill').textContent='▶ Reproduciendo'; $('statPill').className='pill play'; };
   u.onend=u.onerror=()=>resetPlay();
-
   u.onboundary=ev=>{
     if(ev.name!=='word') return;
-    const before=text.substring(0,ev.charIndex);
-    const wIdx=before.split(/\s+/).filter(Boolean).length;
+    const wIdx=text.substring(0,ev.charIndex).split(/\s+/).filter(Boolean).length;
     hlWord(wIdx);
   };
   return u;
 }
-
 function hlWord(idx){
   if(!wordEls.length) return;
   if(curW<wordEls.length) wordEls[curW].classList.remove('now');
   curW=Math.min(idx,wordEls.length-1);
-  const el=wordEls[curW];
-  if(!el) return;
+  const el=wordEls[curW]; if(!el) return;
   el.classList.add('now','done');
   el.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});
   setProgress(Math.round((curW/Math.max(1,wordEls.length-1))*100));
 }
 function clearHL(){ wordEls.forEach(w=>w.classList.remove('now','done')); curW=0; setProgress(0); }
-
 function resetPlay(){
-  clearInterval(keepTimer);
-  playing=false; paused=false; utt=null;
+  clearInterval(keepTimer); playing=false; paused=false; utt=null;
   $('bPlay').textContent='▶'; $('fc-p').textContent='▶';
-  $('statPill').textContent='Detenido';
-  $('statPill').className='pill';
+  $('statPill').textContent='Detenido'; $('statPill').className='pill';
   clearHL(); stopRec();
 }
 function keepAlive(){
@@ -1877,54 +1806,32 @@ function keepAlive(){
     if(document.hidden){ synth.pause(); setTimeout(()=>{ if(playing&&paused) synth.resume(); },80); }
   },12000);
 }
-function speak(text){
-  if(!text.trim()) return;
-  synth.cancel(); clearHL();
-  utt=makeUtt(text);
-  keepAlive();
-  synth.speak(utt);
-}
+function speak(text){ if(!text.trim()) return; synth.cancel(); clearHL(); utt=makeUtt(text); keepAlive(); synth.speak(utt); }
 function stopSpeech(){ clearInterval(keepTimer); synth.cancel(); resetPlay(); }
 function togglePlay(){
-  if(!playing&&!paused){
-    const txt=fullText||$('textDisplay').textContent;
-    if(!txt.trim()){ toast('Carga texto primero.'); return; }
-    speak(txt);
-  } else if(playing&&!paused){ synth.pause(); }
-  else if(paused){ synth.resume(); }
+  if(!playing&&!paused){ const txt=fullText||$('textDisplay').textContent; if(!txt.trim()){ toast('Carga texto primero.'); return; } speak(txt); }
+  else if(playing&&!paused) synth.pause();
+  else if(paused) synth.resume();
 }
-
-$('bPlay').onclick=togglePlay;
-$('fc-p').onclick=togglePlay;
-$('bStop').onclick=stopSpeech;
-$('fc-s').onclick=stopSpeech;
-$('bSel').onclick=()=>{
-  const sel=window.getSelection();
-  const txt=sel&&!sel.isCollapsed?sel.toString().trim():null;
-  if(txt) speak(txt); else toast('Selecciona texto primero.');
-};
+$('bPlay').onclick=togglePlay; $('fc-p').onclick=togglePlay;
+$('bStop').onclick=stopSpeech; $('fc-s').onclick=stopSpeech;
+$('bSel').onclick=()=>{ const sel=window.getSelection(); const txt=sel&&!sel.isCollapsed?sel.toString().trim():null; if(txt) speak(txt); else toast('Selecciona texto primero.'); };
 $('fc-sl').onclick=()=>{ const v=Math.max(.5,parseFloat($('rRate').value)-.1); $('rRate').value=v; $('rV').textContent=v.toFixed(1)+'×'; $('fcspd').textContent=v.toFixed(1)+'×'; };
 $('fc-fa').onclick=()=>{ const v=Math.min(2.5,parseFloat($('rRate').value)+.1); $('rRate').value=v; $('rV').textContent=v.toFixed(1)+'×'; $('fcspd').textContent=v.toFixed(1)+'×'; };
-
 function setProgress(pct){ $('pbfill').style.width=pct+'%'; $('spos').textContent=pct+'%'; }
-
 $('pbtrack').onclick=e=>{
   if(!fullText){ toast('Carga texto primero.'); return; }
   const rect=$('pbtrack').getBoundingClientRect();
   const pct=Math.max(0,Math.min(100,((e.clientX-rect.left)/rect.width)*100));
   const wIdx=Math.floor((pct/100)*(wordEls.length-1));
-  stopSpeech();
-  const words=fullText.split(/\s+/).filter(Boolean);
-  const from=words.slice(wIdx).join(' ');
-  curW=wIdx;
+  stopSpeech(); const words=fullText.split(/\s+/).filter(Boolean); const from=words.slice(wIdx).join(' '); curW=wIdx;
   setTimeout(()=>{ speak(from); wordEls[wIdx]?.scrollIntoView({behavior:'smooth',block:'center'}); },80);
   setProgress(Math.round(pct));
 };
 
-// ── Flotante ──
+// ── Floating drag ─────────────────────────────────────
 (()=>{
-  const el=$('fc'), handle=$('fcdrag');
-  let ox,oy,ex,ey;
+  const el=$('fc'), handle=$('fcdrag'); let ox,oy,ex,ey;
   function onMove(cx,cy){ el.style.right='auto'; el.style.bottom='auto'; el.style.left=(ex+cx-ox)+'px'; el.style.top=(ey+cy-oy)+'px'; }
   handle.addEventListener('mousedown',e=>{ ex=el.offsetLeft; ey=el.offsetTop; ox=e.clientX; oy=e.clientY; e.preventDefault();
     const mm=ev=>onMove(ev.clientX,ev.clientY);
@@ -1939,21 +1846,17 @@ $('pbtrack').onclick=e=>{
 })();
 
 // ════════════════════════════════════════════════════════
-// EXPORTAR AUDIO
+// AUDIO EXPORT
 // ════════════════════════════════════════════════════════
 $('bExport').onclick=async()=>{
   const text=fullText.trim()||$('textDisplay').textContent.trim();
   if(!text){ toast('Carga texto primero.'); return; }
   try{
-    const stream=await navigator.mediaDevices.getDisplayMedia({
-      video:{displaySurface:'browser'},
-      audio:{echoCancellation:false,noiseSuppression:false,sampleRate:48000}
-    });
+    const stream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'browser'},audio:{echoCancellation:false,noiseSuppression:false,sampleRate:48000}});
     const aTracks=stream.getAudioTracks();
     if(!aTracks.length){ stream.getTracks().forEach(t=>t.stop()); toast('⚠️ Activa "Compartir audio de la pestaña".'); return; }
     stream.getVideoTracks().forEach(t=>t.stop());
-    const aStream=new MediaStream(aTracks);
-    recChunks=[];
+    const aStream=new MediaStream(aTracks); recChunks=[];
     const mimeType=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
     mediaRec=new MediaRecorder(aStream,{mimeType});
     mediaRec.ondataavailable=e=>{ if(e.data.size>0) recChunks.push(e.data); };
@@ -1964,44 +1867,25 @@ $('bExport').onclick=async()=>{
       showRecUI(false); toast('✓ Audio guardado: '+name+'.webm');
       recording=false; mediaRec=null;
     };
-    mediaRec.start(1000); recording=true;
-    showRecUI(true); speak(text);
+    mediaRec.start(1000); recording=true; showRecUI(true); speak(text);
     toast('🔴 Grabando — pulsa "Detener y guardar" cuando termines.',5000);
-  }catch(err){
-    if(err.name==='NotAllowedError') toast('Permiso denegado. Permite compartir la pantalla.');
-    else toast('Error: '+err.message);
-  }
+  }catch(err){ if(err.name==='NotAllowedError') toast('Permiso denegado.'); else toast('Error: '+err.message); }
 };
 $('bStopRec').onclick=()=>{ stopSpeech(); if(mediaRec&&recording) mediaRec.stop(); };
 function stopRec(){ if(mediaRec&&recording) mediaRec.stop(); }
 function showRecUI(on){ $('bExport').style.display=on?'none':''; $('bStopRec').style.display=on?'':'none'; $('recStatus').style.display=on?'':'none'; }
 
 // ════════════════════════════════════════════════════════
-// TRADUCCIÓN — MULTI-API CASCADA (sin clave, sin registro)
-// Prioridad: LibreTranslate público → MyMemory → Lingva
+// TRANSLATION — Multi-API cascade
 // ════════════════════════════════════════════════════════
 const LANG_NAMES={es:'Español',en:'Inglés',fr:'Francés',de:'Alemán',pt:'Portugués',it:'Italiano',ru:'Ruso',zh:'Chino',ar:'Árabe',ja:'Japonés',auto:'auto'};
+const LIBRE_INSTANCES=['https://libretranslate.de','https://translate.terraprint.co','https://lt.vern.cc'];
 
-// Instancias públicas de LibreTranslate
-const LIBRE_INSTANCES=[
-  'https://libretranslate.de',
-  'https://translate.terraprint.co',
-  'https://lt.vern.cc'
-];
-
-async function tryLibreTranslate(text, src, dest){
-  // LibreTranslate API: POST /translate (sin clave en instancias públicas)
+async function tryLibreTranslate(text,src,dest){
   const srcCode=src==='auto'?'auto':src;
-  for(const instance of LIBRE_INSTANCES){
+  for(const inst of LIBRE_INSTANCES){
     try{
-      const res=await Promise.race([
-        fetch(`${instance}/translate`,{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({q:text,source:srcCode,target:dest,format:'text'})
-        }),
-        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))
-      ]);
+      const res=await Promise.race([fetch(`${inst}/translate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({q:text,source:srcCode,target:dest,format:'text'})}),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
       if(!res.ok) continue;
       const data=await res.json();
       if(data.translatedText) return data.translatedText;
@@ -2009,117 +1893,64 @@ async function tryLibreTranslate(text, src, dest){
   }
   throw new Error('LibreTranslate no disponible');
 }
-
-async function tryMyMemory(text, src, dest){
+async function tryMyMemory(text,src,dest){
   const srcCode=src==='auto'?'en':src;
-  const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${srcCode}|${dest}`;
-  const res=await fetch(url);
+  const res=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${srcCode}|${dest}`);
   if(!res.ok) throw new Error('MyMemory error '+res.status);
   const data=await res.json();
   if(data.responseStatus!==200) throw new Error(data.responseDetails||'Error MyMemory');
   return data.responseData.translatedText;
 }
-
-async function tryLingva(text, src, dest){
-  // Lingva API pública
+async function tryLingva(text,src,dest){
   const srcCode=src==='auto'?'en':src;
-  const encoded=encodeURIComponent(text);
-  const res=await Promise.race([
-    fetch(`https://lingva.ml/api/v1/${srcCode}/${dest}/${encoded}`),
-    new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))
-  ]);
-  if(!res.ok) throw new Error('Lingva error '+res.status);
+  const res=await Promise.race([fetch(`https://lingva.ml/api/v1/${srcCode}/${dest}/${encodeURIComponent(text)}`),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
+  if(!res.ok) throw new Error('Lingva error');
   const data=await res.json();
   if(data.translation) return data.translation;
   throw new Error('Sin traducción de Lingva');
 }
-
-async function translateChunk(text, src, dest){
-  // Intentar en cascada
-  try{ return await tryLibreTranslate(text,src,dest); } catch(e1){}
-  try{ return await tryMyMemory(text,src,dest); } catch(e2){}
-  try{ return await tryLingva(text,src,dest); } catch(e3){}
-  throw new Error('Todos los servicios de traducción fallaron. Verifica tu conexión.');
+async function translateChunk(text,src,dest){
+  try{ return await tryLibreTranslate(text,src,dest); }catch{}
+  try{ return await tryMyMemory(text,src,dest); }catch{}
+  try{ return await tryLingva(text,src,dest); }catch{}
+  throw new Error('Todos los servicios fallaron.');
 }
-
-function splitChunks(text, maxLen=800){
+function splitChunks(text,maxLen=800){
   const sentences=text.match(/[^.!?]+[.!?]*/g)||[text];
   const chunks=[]; let cur='';
-  sentences.forEach(s=>{
-    if((cur+s).length>maxLen){ if(cur) chunks.push(cur.trim()); cur=s; }
-    else cur+=s;
-  });
+  sentences.forEach(s=>{ if((cur+s).length>maxLen){ if(cur) chunks.push(cur.trim()); cur=s; } else cur+=s; });
   if(cur.trim()) chunks.push(cur.trim());
   return chunks.length?chunks:[text];
 }
-
-async function runTranslate(text, src, dest, origEl, outEl){
+async function runTranslate(text,src,dest,origEl,outEl){
   if(!text.trim()){ toast('No hay texto para traducir.'); return; }
-  const truncated=text.length>5000?text.substring(0,5000):text;
-  origEl.textContent=truncated+(text.length>5000?'\n[…texto truncado a 5000 chars]':'');
-  origEl.classList.remove('mt');
-  outEl.textContent='⏳ Traduciendo…';
-  outEl.classList.remove('mt');
-  load(10);
+  const trunc=text.length>5000?text.substring(0,5000):text;
+  origEl.textContent=trunc+(text.length>5000?'\n[…truncado a 5000 chars]':'');
+  origEl.classList.remove('mt'); outEl.textContent='⏳ Traduciendo…'; outEl.classList.remove('mt'); load(10);
   try{
-    const chunks=splitChunks(truncated,800);
-    let result='';
-    for(let i=0;i<chunks.length;i++){
-      load(10+Math.round((i/chunks.length)*85));
-      result+=await translateChunk(chunks[i],src,dest)+' ';
-    }
-    outEl.textContent=result.trim();
-    load(100);
-    toast(`✓ Traducido al ${LANG_NAMES[dest]}`);
-    document.querySelector('[data-tab="translate"]').click();
+    const chunks=splitChunks(trunc,800); let result='';
+    for(let i=0;i<chunks.length;i++){ load(10+Math.round((i/chunks.length)*85)); result+=await translateChunk(chunks[i],src,dest)+' '; }
+    outEl.textContent=result.trim(); load(100); toast(`✓ Traducido al ${LANG_NAMES[dest]}`);
+    goView('translate');
   }catch(err){
-    outEl.textContent='❌ Error: '+err.message+'\n\nSugerencias:\n• Verifica tu conexión a internet\n• Intenta con un fragmento más corto\n• Espera unos minutos y vuelve a intentar';
-    load(100);
+    outEl.textContent='❌ '+err.message+'\n\n• Verifica tu conexión\n• Intenta con texto más corto'; load(100);
   }
 }
-
 $('bTransAll').onclick=async()=>await runTranslate(fullText,$('tSrc').value,$('tDest').value,$('tOrig'),$('tOut'));
-$('bTransSel').onclick=async()=>{
-  const sel=window.getSelection(); const txt=sel&&!sel.isCollapsed?sel.toString().trim():null;
-  if(!txt){ toast('Selecciona texto primero.'); return; }
-  await runTranslate(txt,$('tSrc').value,$('tDest').value,$('tOrig'),$('tOut'));
-};
-$('bCopyTrans').onclick=()=>{
-  const t=$('tOut').textContent;
-  if(!t||t.startsWith('La traducción')){ toast('No hay traducción.'); return; }
-  navigator.clipboard.writeText(t).then(()=>toast('✓ Traducción copiada'));
-};
-$('bQTrans').onclick=async()=>{
-  if(!fullText.trim()){ toast('Carga texto primero.'); return; }
-  $('tDest').value=$('sdest').value;
-  await runTranslate(fullText,'auto',$('sdest').value,$('tOrig'),$('tOut'));
-};
+$('bTransSel').onclick=async()=>{ const sel=window.getSelection(); const txt=sel&&!sel.isCollapsed?sel.toString().trim():null; if(!txt){ toast('Selecciona texto primero.'); return; } await runTranslate(txt,$('tSrc').value,$('tDest').value,$('tOrig'),$('tOut')); };
+$('bCopyTrans').onclick=()=>{ const t=$('tOut').textContent; if(!t||t.startsWith('La traducción')){ toast('No hay traducción.'); return; } navigator.clipboard.writeText(t).then(()=>toast('✓ Traducción copiada')); };
+$('bQTrans').onclick=async()=>{ if(!fullText.trim()){ toast('Carga texto primero.'); return; } $('tDest').value=$('sdest').value; await runTranslate(fullText,'auto',$('sdest').value,$('tOrig'),$('tOut')); };
 
 // ════════════════════════════════════════════════════════
-// ALGORITMOS NLP
+// NLP ALGORITHMS
 // ════════════════════════════════════════════════════════
 const STOP_ES=new Set('a al ante aquél aquella aquello aquel como con cual de del desde dos el ella ellas ellos en entre era eres es esta estaba estas este esto estos fue hay la las le les lo los me mi mis muy no nos o para pero por que quien se si sin son su sus también tan te tenía todo todos una uno unos voy ya yo un más ni'.split(' '));
 const STOP_EN=new Set('a an the and or but if in on at to of for is are was were be been being have has had do does did will would shall should may might must can could am i we you he she it they their them there this that these those with from by as into then than also'.split(' '));
+function extractWords(text){ return text.toLowerCase().replace(/[^a-záéíóúüñ\w\s]/gi,' ').split(/\s+/).filter(w=>w.length>3&&!STOP_ES.has(w)&&!STOP_EN.has(w)); }
+function tfidf(text){ const words=extractWords(text); const freq={}; words.forEach(w=>{ freq[w]=(freq[w]||0)+1; }); const max=Math.max(...Object.values(freq),1); Object.keys(freq).forEach(k=>freq[k]/=max); return freq; }
+function scoreSentences(sentences,freq){ return sentences.map(s=>{ const words=extractWords(s); if(!words.length) return {s,score:0}; return {s,score:words.reduce((acc,w)=>acc+(freq[w]||0),0)/words.length}; }); }
 
-function extractWords(text){
-  return text.toLowerCase().replace(/[^a-záéíóúüñ\w\s]/gi,' ').split(/\s+/).filter(w=>w.length>3&&!STOP_ES.has(w)&&!STOP_EN.has(w));
-}
-function tfidf(text){
-  const words=extractWords(text); const freq={};
-  words.forEach(w=>{ freq[w]=(freq[w]||0)+1; });
-  const max=Math.max(...Object.values(freq),1);
-  Object.keys(freq).forEach(k=>freq[k]/=max);
-  return freq;
-}
-function scoreSentences(sentences,freq){
-  return sentences.map(s=>{
-    const words=extractWords(s);
-    if(!words.length) return {s,score:0};
-    return {s, score:words.reduce((acc,w)=>acc+(freq[w]||0),0)/words.length};
-  });
-}
-
-// ── RESUMEN ──────────────────────────────────────────
+// Summary
 function genSummary(text,n){
   const rawS=text.match(/[^.!?]+[.!?]*/g)||[];
   const sentences=rawS.map(s=>s.trim()).filter(s=>s.length>20);
@@ -2128,35 +1959,13 @@ function genSummary(text,n){
   const top=scoreSentences(sentences,freq).slice().sort((a,b)=>b.score-a.score).slice(0,n).map(x=>x.s);
   return sentences.filter(s=>top.includes(s)).join(' ');
 }
-$('bSumm').onclick=()=>{
-  if(!fullText){ toast('Carga texto primero.'); return; }
-  const nMap={breve:5,medio:10,completo:20};
-  const n=nMap[$('sLevel').value];
-  load(30);
-  setTimeout(()=>{
-    try{ $('summOut').textContent=genSummary(fullText,n); $('summOut').classList.remove('mt'); load(100); toast('✓ Resumen generado ('+n+' oraciones)'); }
-    catch(e){ $('summOut').textContent='Error: '+e.message; load(100); }
-  },100);
-};
-$('bCopySumm').onclick=()=>{
-  if($('summOut').classList.contains('mt')){ toast('Genera un resumen primero.'); return; }
-  navigator.clipboard.writeText($('summOut').textContent).then(()=>toast('✓ Copiado'));
-};
-$('bExSumm').onclick=()=>{
-  if($('summOut').classList.contains('mt')){ toast('Genera un resumen primero.'); return; }
-  dl($('summOut').textContent,'stoica-resumen.txt'); toast('✓ Exportado');
-};
+$('bSumm').onclick=()=>{ if(!fullText){ toast('Carga texto primero.'); return; } const nMap={breve:5,medio:10,completo:20}; load(30); setTimeout(()=>{ try{ $('summOut').textContent=genSummary(fullText,nMap[$('sLevel').value]); $('summOut').classList.remove('mt'); load(100); toast('✓ Resumen generado'); }catch(e){ $('summOut').textContent='Error: '+e.message; load(100); } },100); };
+$('bCopySumm').onclick=()=>{ if($('summOut').classList.contains('mt')){ toast('Genera un resumen primero.'); return; } navigator.clipboard.writeText($('summOut').textContent).then(()=>toast('✓ Copiado')); };
+$('bExSumm').onclick=()=>{ if($('summOut').classList.contains('mt')){ toast('Genera un resumen primero.'); return; } dl($('summOut').textContent,'stoica-resumen.txt'); toast('✓ Exportado'); };
 
-// ── PREGUNTAS ─────────────────────────────────────────
-function extractSubject(sentence){
-  const words=sentence.trim().split(/\s+/);
-  const meaningful=words.filter(w=>w.length>2&&!STOP_ES.has(w.toLowerCase())&&!STOP_EN.has(w.toLowerCase()));
-  return meaningful.slice(0,3).join(' ').replace(/[.,;:]/g,'')||words.slice(0,2).join(' ');
-}
-function summarizeSentence(s){
-  const words=s.split(/\s+/);
-  return words.length>15?words.slice(0,12).join(' ')+'…':s;
-}
+// Questions
+function extractSubject(s){ const words=s.trim().split(/\s+/); const m=words.filter(w=>w.length>2&&!STOP_ES.has(w.toLowerCase())&&!STOP_EN.has(w.toLowerCase())); return m.slice(0,3).join(' ').replace(/[.,;:]/g,'')||words.slice(0,2).join(' '); }
+function summarizeSentence(s){ const words=s.split(/\s+/); return words.length>15?words.slice(0,12).join(' ')+'…':s; }
 function genQuestions(text,type,count){
   const rawS=text.match(/[^.!?]+[.!?]*/g)||[];
   const sentences=rawS.map(s=>s.trim()).filter(s=>s.split(/\s+/).length>6);
@@ -2165,135 +1974,66 @@ function genQuestions(text,type,count){
   const scored=scoreSentences(sentences,freq).sort((a,b)=>b.score-a.score);
   const questions=[]; const used=new Set();
   const templates={
-    literal:[
-      s=>({q:`¿Qué se menciona sobre "${extractSubject(s)}"?`,a:s,j:'Información explícita en el texto.'}),
-      s=>({q:`Según el texto, ¿qué dice sobre ${extractSubject(s)}?`,a:s,j:'El texto lo expresa directamente.'}),
-      s=>({q:`¿Cómo describe el texto a "${extractSubject(s)}"?`,a:s,j:'Descripción literal en el fragmento.'}),
-      s=>({q:`¿Qué afirma el autor sobre ${extractSubject(s)}?`,a:s,j:'Afirmación presente de forma explícita.'}),
-    ],
-    inferencial:[
-      s=>({q:`¿Por qué crees que "${extractSubject(s)}" es importante en el texto?`,a:'Inferencia: '+summarizeSentence(s),j:'Conclusión deducida del contenido implícito.'}),
-      s=>({q:`¿Qué consecuencias se derivan de lo afirmado sobre ${extractSubject(s)}?`,a:'Consecuencia probable: '+summarizeSentence(s),j:'Se infiere del contexto general.'}),
-      s=>({q:`¿Qué intención tiene el autor al mencionar "${extractSubject(s)}"?`,a:'Intención probable: contextualizar el tema central.',j:'Deducido del tono y estructura.'}),
-      s=>({q:`¿Qué relación existe entre "${extractSubject(s)}" y el tema principal?`,a:'Relación: '+summarizeSentence(s),j:'Establecida implícitamente.'}),
-    ]
+    literal:[s=>({q:`¿Qué se menciona sobre "${extractSubject(s)}"?`,a:s,j:'Información explícita en el texto.'}),s=>({q:`Según el texto, ¿qué dice sobre ${extractSubject(s)}?`,a:s,j:'El texto lo expresa directamente.'}),s=>({q:`¿Cómo describe el texto a "${extractSubject(s)}"?`,a:s,j:'Descripción literal.'}),s=>({q:`¿Qué afirma el autor sobre ${extractSubject(s)}?`,a:s,j:'Afirmación explícita.'})],
+    inferencial:[s=>({q:`¿Por qué crees que "${extractSubject(s)}" es importante?`,a:'Inferencia: '+summarizeSentence(s),j:'Conclusión deducida del contenido.'}),s=>({q:`¿Qué consecuencias se derivan de lo afirmado sobre ${extractSubject(s)}?`,a:'Probable: '+summarizeSentence(s),j:'Inferido del contexto.'}),s=>({q:`¿Qué intención tiene el autor al mencionar "${extractSubject(s)}"?`,a:'Contextualizar el tema central.',j:'Deducido del tono.'}),s=>({q:`¿Qué relación existe entre "${extractSubject(s)}" y el tema principal?`,a:'Relación: '+summarizeSentence(s),j:'Establecida implícitamente.'})]
   };
   const pool=type==='mixto'?[...templates.literal,...templates.inferencial]:(templates[type]||templates.literal);
   let qi=0;
   for(let i=0;i<scored.length&&questions.length<count;i++){
     const sent=scored[i].s; if(used.has(sent)) continue; used.add(sent);
     const tpl=pool[qi%pool.length]; qi++;
-    try{ const q=tpl(sent); if(q.q&&q.a) questions.push({...q,orig:sent}); }catch(e){}
+    try{ const q=tpl(sent); if(q.q&&q.a) questions.push({...q,orig:sent}); }catch{}
   }
   if(questions.length<count){
     Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,20).map(e=>e[0]).forEach(kw=>{
       if(questions.length>=count) return;
-      questions.push({q:`¿Cuál es la importancia de "${kw}" en el texto?`,a:`El término "${kw}" es un concepto de alta frecuencia y relevancia en el texto.`,j:'Identificado como palabra clave por frecuencia.',orig:''});
+      questions.push({q:`¿Cuál es la importancia de "${kw}" en el texto?`,a:`"${kw}" es un concepto de alta relevancia.`,j:'Identificado por frecuencia.',orig:''});
     });
   }
   return questions.slice(0,count);
 }
-
-$('bGenQ').onclick=()=>{
-  if(!fullText){ toast('Carga texto primero.'); return; }
-  const count=Math.min(30,Math.max(5,parseInt($('qNum').value)||10));
-  load(30);
-  setTimeout(()=>{
-    const qs=genQuestions(fullText,$('qType').value,count);
-    load(100);
-    if(!qs||!qs.length){ $('questOut').innerHTML='<p style="font-family:var(--fMono);font-size:.7rem;color:var(--muted)">Texto muy corto. Prueba con más contenido.</p>'; return; }
-    lastQs=qs; renderQuestions(qs); toast(`✓ ${qs.length} preguntas generadas`);
-  },150);
-};
-
+$('bGenQ').onclick=()=>{ if(!fullText){ toast('Carga texto primero.'); return; } const count=Math.min(30,Math.max(5,parseInt($('qNum').value)||10)); load(30); setTimeout(()=>{ const qs=genQuestions(fullText,$('qType').value,count); load(100); if(!qs||!qs.length){ $('questOut').innerHTML='<p style="font-family:var(--fMono);color:var(--c-muted)">Texto muy corto.</p>'; return; } lastQs=qs; renderQuestions(qs); toast(`✓ ${qs.length} preguntas generadas`); },150); };
 function renderQuestions(list){
   const c=$('questOut'); c.innerHTML='';
   list.forEach((q,i)=>{
-    const card=document.createElement('div');
-    card.className='qcard';
-    card.innerHTML=`
-      <div class="qnum">PREGUNTA ${i+1} · ${$('qType').value==='inferencial'?'Inferencial':'Comprensión'}</div>
-      <div class="qtxt">${E(q.q)}</div>
-      <button class="btn g" style="align-self:flex-start" onclick="this.nextElementSibling.classList.toggle('vis');this.textContent=this.textContent.includes('Ver')?'Ocultar respuesta':'Ver respuesta'">Ver respuesta</button>
-      <div class="qans">
-        <strong>Respuesta:</strong> ${E(q.a)}<br/>
-        <span class="qjust">Justificación: ${E(q.j)}</span>
-        ${q.orig?`<br/><span class="qjust" style="color:var(--acc)">Fragmento: "${E(summarizeSentence(q.orig))}"</span>`:''}
-      </div>`;
+    const card=document.createElement('div'); card.className='qcard';
+    card.innerHTML=`<div class="qnum">PREGUNTA ${i+1} · ${$('qType').value==='inferencial'?'Inferencial':'Comprensión'}</div><div class="qtxt">${E(q.q)}</div><button class="btn g" style="align-self:flex-start" onclick="this.nextElementSibling.classList.toggle('vis');this.textContent=this.textContent.includes('Ver')?'Ocultar respuesta':'Ver respuesta'">Ver respuesta</button><div class="qans"><strong>Respuesta:</strong> ${E(q.a)}<br/><span class="qjust">Justificación: ${E(q.j)}</span>${q.orig?`<br/><span class="qjust" style="color:var(--c-pri)">Fragmento: "${E(summarizeSentence(q.orig))}"</span>`:''}</div>`;
     c.appendChild(card);
   });
 }
+$('bCopyQ').onclick=()=>{ if(!lastQs.length){ toast('Genera preguntas primero.'); return; } navigator.clipboard.writeText(lastQs.map((q,i)=>`${i+1}. ${q.q}\nRespuesta: ${q.a}\nJustificación: ${q.j}`).join('\n\n────────\n\n')).then(()=>toast('✓ Preguntas copiadas')); };
 
-$('bCopyQ').onclick=()=>{
-  if(!lastQs.length){ toast('Genera preguntas primero.'); return; }
-  const text=lastQs.map((q,i)=>`${i+1}. ${q.q}\nRespuesta: ${q.a}\nJustificación: ${q.j}`).join('\n\n────────\n\n');
-  navigator.clipboard.writeText(text).then(()=>toast('✓ Preguntas copiadas'));
-};
-
-// ── EXPORT DOCX / XLSX ────────────────────────────────
+// DOCX / XLSX Export
 $('bExQDocx').onclick=()=>{ if(!lastQs.length){ toast('Genera preguntas primero.'); return; } exportQDocx(lastQs); };
 $('bExQXlsx').onclick=()=>{ if(!lastQs.length){ toast('Genera preguntas primero.'); return; } exportQXlsx(lastQs); };
 
-function makeDocxPara(text,bold=false,align='left',color='1a1d2e'){
-  const jc=align==='center'?'<w:jc w:val="center"/>':'<w:jc w:val="left"/>';
+function makeDocxPara(text,bold=false,align='left',color='181a28'){
+  const jc=align==='center'?'<w:jc w:val="center"/>':'';
   const rPr=`<w:rPr>${bold?'<w:b/>':''}<w:color w:val="${color}"/><w:sz w:val="${bold?'24':'20'}"/></w:rPr>`;
   const esc=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   return `<w:p><w:pPr>${jc}</w:pPr><w:r>${rPr}<w:t xml:space="preserve">${esc}</w:t></w:r></w:p>`;
 }
-
 function exportQDocx(qs){
-  const paragraphs=[];
-  paragraphs.push(makeDocxPara('Preguntas de Comprensión — Stoica Reader',true,'center','1a3a6e'));
-  paragraphs.push(makeDocxPara(`Generado: ${new Date().toLocaleDateString('es-CO')}`,false,'center','888888'));
-  paragraphs.push(makeDocxPara(''));
-  qs.forEach((q,i)=>{
-    paragraphs.push(makeDocxPara(`${i+1}. ${q.q}`,true,'left','1a1d2e'));
-    paragraphs.push(makeDocxPara(`Respuesta: ${q.a}`,false,'left','2d3560'));
-    paragraphs.push(makeDocxPara(`Justificación: ${q.j}`,false,'left','666880'));
-    if(q.orig) paragraphs.push(makeDocxPara(`Fragmento: "${summarizeSentence(q.orig)}"`,false,'left','888aaa'));
-    paragraphs.push(makeDocxPara(''));
-  });
-  const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-  xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
-  <w:body>${paragraphs.join('\n')}
-    <w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr>
-  </w:body>
-</w:document>`;
-  const zip=buildZip({
-    '[Content_Types].xml':`<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,
-    '_rels/.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,
-    'word/document.xml':docXml,
-    'word/_rels/document.xml.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`
-  });
-  dlBlob(zip,'stoica-preguntas.docx');
-  toast('✓ Exportado como Word (.docx)');
+  const paragraphs=[makeDocxPara('Preguntas de Comprensión — Stoica Reader',true,'center','1a3a6e'),makeDocxPara(`Generado: ${new Date().toLocaleDateString('es-CO')}`,false,'center','888888'),makeDocxPara('')];
+  qs.forEach((q,i)=>{ paragraphs.push(makeDocxPara(`${i+1}. ${q.q}`,true,'left','181a28'),makeDocxPara(`Respuesta: ${q.a}`,false,'left','2d3560'),makeDocxPara(`Justificación: ${q.j}`,false,'left','666880')); if(q.orig) paragraphs.push(makeDocxPara(`Fragmento: "${summarizeSentence(q.orig)}"`,false,'left','888aaa')); paragraphs.push(makeDocxPara('')); });
+  const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${paragraphs.join('\n')}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr></w:body></w:document>`;
+  const zip=buildZip({'[Content_Types].xml':`<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`,'_rels/.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`,'word/document.xml':docXml,'word/_rels/document.xml.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`});
+  dlBlob(zip,'stoica-preguntas.docx'); toast('✓ Exportado a Word');
 }
-
 function exportQXlsx(qs){
   const sharedStrings=[]; const ssMap={};
   function addStr(s){ const k=String(s); if(ssMap[k]===undefined){ ssMap[k]=sharedStrings.length; sharedStrings.push(k); } return ssMap[k]; }
   const headers=['#','Pregunta','Respuesta','Justificación','Fragmento'];
   const rows=[headers,...qs.map((q,i)=>[String(i+1),q.q,q.a,q.j,q.orig?summarizeSentence(q.orig):'—'])];
   const sheetRows=rows.map((row,ri)=>`<row r="${ri+1}">${row.map((cell,ci)=>`<c r="${String.fromCharCode(65+ci)}${ri+1}" t="s"><v>${addStr(cell)}</v></c>`).join('')}</row>`).join('\n');
-  const zip=buildZip({
-    '[Content_Types].xml':`<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/></Types>`,
-    '_rels/.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
-    'xl/workbook.xml':`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Preguntas" sheetId="1" r:id="rId1"/></sheets></workbook>`,
-    'xl/_rels/workbook.xml.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>`,
-    'xl/worksheets/sheet1.xml':`<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sheetRows}</sheetData></worksheet>`,
-    'xl/sharedStrings.xml':`<?xml version="1.0" encoding="UTF-8"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${sharedStrings.length}" uniqueCount="${sharedStrings.length}">${sharedStrings.map(s=>`<si><t xml:space="preserve">${String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</t></si>`).join('')}</sst>`
-  });
-  dlBlob(zip,'stoica-preguntas.xlsx');
-  toast('✓ Exportado como Excel (.xlsx)');
+  const zip=buildZip({'[Content_Types].xml':`<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/></Types>`,'_rels/.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,'xl/workbook.xml':`<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Preguntas" sheetId="1" r:id="rId1"/></sheets></workbook>`,'xl/_rels/workbook.xml.rels':`<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>`,'xl/worksheets/sheet1.xml':`<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${sheetRows}</sheetData></worksheet>`,'xl/sharedStrings.xml':`<?xml version="1.0" encoding="UTF-8"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${sharedStrings.length}" uniqueCount="${sharedStrings.length}">${sharedStrings.map(s=>`<si><t xml:space="preserve">${String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</t></si>`).join('')}</sst>`});
+  dlBlob(zip,'stoica-preguntas.xlsx'); toast('✓ Exportado a Excel');
 }
 
 function buildZip(files){
-  const enc=new TextEncoder();
-  const entries=[]; let offset=0;
+  const enc=new TextEncoder(); const entries=[]; let offset=0;
   Object.entries(files).forEach(([name,content])=>{
-    const nameBytes=enc.encode(name);
-    const dataBytes=enc.encode(content);
+    const nameBytes=enc.encode(name); const dataBytes=enc.encode(content);
     const crc=crc32(dataBytes);
     const local=new Uint8Array(30+nameBytes.length+dataBytes.length);
     const view=new DataView(local.buffer);
@@ -2302,13 +2042,11 @@ function buildZip(files){
     view.setUint32(18,dataBytes.length,true); view.setUint32(22,dataBytes.length,true);
     view.setUint16(26,nameBytes.length,true); view.setUint16(28,0,true);
     local.set(nameBytes,30); local.set(dataBytes,30+nameBytes.length);
-    entries.push({local,name:nameBytes,crc,size:dataBytes.length,offset});
-    offset+=local.length;
+    entries.push({local,name:nameBytes,crc,size:dataBytes.length,offset}); offset+=local.length;
   });
   const cdParts=[]; let cdSize=0;
   entries.forEach(({name,crc,size,offset})=>{
-    const cd=new Uint8Array(46+name.length);
-    const view=new DataView(cd.buffer);
+    const cd=new Uint8Array(46+name.length); const view=new DataView(cd.buffer);
     view.setUint32(0,0x02014b50,true); view.setUint16(4,20,true); view.setUint16(6,20,true);
     view.setUint16(8,0,true); view.setUint16(10,0,true); view.setUint16(12,0,true); view.setUint16(14,0,true);
     view.setUint32(16,crc,true); view.setUint32(20,size,true); view.setUint32(24,size,true);
@@ -2316,172 +2054,75 @@ function buildZip(files){
     view.setUint16(34,0,true); view.setUint32(38,0,true); view.setUint32(42,offset,true);
     cd.set(name,46); cdParts.push(cd); cdSize+=cd.length;
   });
-  const eocd=new Uint8Array(22);
-  const ev=new DataView(eocd.buffer);
+  const eocd=new Uint8Array(22); const ev=new DataView(eocd.buffer);
   ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true);
   ev.setUint16(8,entries.length,true); ev.setUint16(10,entries.length,true);
   ev.setUint32(12,cdSize,true); ev.setUint32(16,offset,true); ev.setUint16(20,0,true);
-  const total=offset+cdSize+22;
-  const result=new Uint8Array(total);
-  let pos=0;
-  entries.forEach(e=>{ result.set(e.local,pos); pos+=e.local.length; });
-  cdParts.forEach(e=>{ result.set(e,pos); pos+=e.length; });
-  result.set(eocd,pos);
+  const total=offset+cdSize+22; const result=new Uint8Array(total);
+  let pos=0; entries.forEach(e=>{ result.set(e.local,pos); pos+=e.local.length; });
+  cdParts.forEach(e=>{ result.set(e,pos); pos+=e.length; }); result.set(eocd,pos);
   return new Blob([result],{type:'application/zip'});
 }
-
 function crc32(data){
   let crc=0xFFFFFFFF;
-  const table=crc32.table||(crc32.table=(()=>{
-    const t=[];
-    for(let i=0;i<256;i++){ let c=i; for(let j=0;j<8;j++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[i]=c; }
-    return t;
-  })());
+  const table=crc32.table||(crc32.table=(()=>{ const t=[]; for(let i=0;i<256;i++){ let c=i; for(let j=0;j<8;j++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[i]=c; } return t; })());
   for(let i=0;i<data.length;i++) crc=table[(crc^data[i])&0xFF]^(crc>>>8);
   return (crc^0xFFFFFFFF)>>>0;
 }
 
 // ════════════════════════════════════════════════════════
-// HERRAMIENTAS — Análisis conceptual mejorado
+// CONCEPTUAL MAP — Tools
 // ════════════════════════════════════════════════════════
 function genMapData(text){
   const freq=tfidf(text);
   const sorted=Object.entries(freq).filter(([w])=>w.length>3).sort((a,b)=>b[1]-a[1]);
   if(!sorted.length) return null;
-
   const central=sorted[0][0];
   const rest=sorted.slice(1,41).map(e=>e[0]);
-
-  // 6 grupos temáticos con colores académicos
   const GROUPS=[
-    {name:'Conceptos principales', color:'var(--acc)', light:'var(--acc-dim)'},
-    {name:'Términos clave', color:'var(--acc2)', light:'var(--acc2-dim)'},
-    {name:'Ideas secundarias', color:'var(--acc3)', light:'var(--acc3-dim)'},
-    {name:'Contexto', color:'var(--gold)', light:'rgba(200,166,83,.1)'},
-    {name:'Detalles', color:'#8b78d4', light:'rgba(139,120,212,.1)'},
-    {name:'Ampliación', color:'#4fa8a8', light:'rgba(79,168,168,.1)'},
+    {name:'Conceptos principales',color:'var(--c-pri)',light:'var(--c-pri-dim)'},
+    {name:'Términos clave',color:'var(--c-teal)',light:'var(--c-teal-dim)'},
+    {name:'Ideas secundarias',color:'var(--c-sec)',light:'var(--c-sec-dim)'},
+    {name:'Contexto',color:'var(--c-amber)',light:'rgba(217,125,58,.1)'},
+    {name:'Detalles',color:'#8b78d4',light:'rgba(139,120,212,.1)'},
+    {name:'Ampliación',color:'#4fa8a8',light:'rgba(79,168,168,.1)'},
   ];
-  const N=6;
-  const branches=[];
-  for(let i=0;i<rest.length;i+=N){
-    const chunk=rest.slice(i,i+N);
-    if(chunk.length) branches.push({...GROUPS[Math.floor(i/N)%GROUPS.length], conceptos:chunk});
-  }
-
-  // Oraciones clave
+  const N=6; const branches=[];
+  for(let i=0;i<rest.length;i+=N){ const chunk=rest.slice(i,i+N); if(chunk.length) branches.push({...GROUPS[Math.floor(i/N)%GROUPS.length],conceptos:chunk}); }
   const sentences=(text.match(/[^.!?]+[.!?]*/g)||[]).map(s=>s.trim()).filter(s=>s.length>25);
   const scoredS=scoreSentences(sentences,freq).sort((a,b)=>b.score-a.score).slice(0,10);
-
-  // Niveles para jerarquía
-  const hierLevels=[
-    sorted.slice(0,4).map(e=>e[0]),
-    sorted.slice(4,12).map(e=>e[0]),
-    sorted.slice(12,28).map(e=>e[0])
-  ];
-
-  // Cuadro comparativo
+  const hierLevels=[sorted.slice(0,4).map(e=>e[0]),sorted.slice(4,12).map(e=>e[0]),sorted.slice(12,28).map(e=>e[0])];
   const compRows=[];
   sorted.slice(0,10).map(e=>e[0]).forEach(kw=>{
     const matching=sentences.filter(s=>s.toLowerCase().includes(kw)).slice(0,2);
-    if(matching.length>=2) compRows.push({concepto:kw, a:summarizeSentence(matching[0]), b:summarizeSentence(matching[1])});
+    if(matching.length>=2) compRows.push({concepto:kw,a:summarizeSentence(matching[0]),b:summarizeSentence(matching[1])});
   });
-
-  return {central, branches, ideas:scoredS.map(x=>x.s), hierLevels, compRows};
+  return {central,branches,ideas:scoredS.map(x=>x.s),hierLevels,compRows};
 }
-
-$('bGenAll').onclick=()=>{
-  if(!fullText){ toast('Carga texto primero.'); return; }
-  load(30);
-  setTimeout(()=>{
-    const data=genMapData(fullText);
-    load(100);
-    if(!data){ $('mmOut').textContent='Texto muy corto para analizar.'; return; }
-    lastMapData=data;
-    renderMindMap(data);
-    renderHierarchy(data);
-    renderComparative(data);
-    renderIdeas(data);
-    toast('✓ Análisis conceptual generado');
-  },150);
-};
+$('bGenAll').onclick=()=>{ if(!fullText){ toast('Carga texto primero.'); return; } load(30); setTimeout(()=>{ const data=genMapData(fullText); load(100); if(!data){ $('mmOut').textContent='Texto muy corto.'; return; } lastMapData=data; renderMindMap(data); renderHierarchy(data); renderComparative(data); renderIdeas(data); toast('✓ Mapa conceptual generado'); },150); };
 
 function renderMindMap(data){
-  const c=$('mmOut');
-  let html=`<div style="display:flex;flex-direction:column;align-items:center;gap:18px;width:100%">`;
-  html+=`<div style="text-align:center"><span class="mm-center">${E(data.central)}</span></div>`;
-  html+=`<div class="mm-grid">`;
-  data.branches.forEach(b=>{
-    html+=`<div class="mm-branch" style="border-top:3px solid ${b.color};background:${b.light||'var(--surf2)'}">
-      <div class="mm-branch-title" style="color:${b.color}">${E(b.name)}</div>
-      <div class="mm-chips">`;
-    b.conceptos.forEach(con=>html+=`<span class="mm-chip">${E(con)}</span>`);
-    html+=`</div></div>`;
-  });
-  html+=`</div></div>`;
-  c.innerHTML=html;
+  $('mmOut').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:18px;width:100%"><div style="text-align:center"><span class="mm-center">${E(data.central)}</span></div><div class="mm-grid">${data.branches.map(b=>`<div class="mm-branch" style="border-top:3px solid ${b.color};background:${b.light||'var(--c-surf2)'}"><div class="mm-branch-title" style="color:${b.color}">${E(b.name)}</div><div class="mm-chips">${b.conceptos.map(c=>`<span class="mm-chip">${E(c)}</span>`).join('')}</div></div>`).join('')}</div></div>`;
 }
-
 function renderHierarchy(data){
-  const c=$('hierOut');
   const L=data.hierLevels;
   let html='<ul class="hier-root">';
-  L[0].forEach(kw=>{
-    html+=`<li class="hier-item"><span class="hier-node l0">${E(kw)}</span>`;
-    if(L[1]&&L[1].length){
-      html+='<ul class="hier-children">';
-      L[1].slice(0,4).forEach(k1=>{
-        html+=`<li class="hier-item"><span class="hier-node l1">${E(k1)}</span>`;
-        if(L[2]&&L[2].length){
-          html+='<ul class="hier-children">';
-          L[2].slice(0,4).forEach(k2=>html+=`<li class="hier-item"><span class="hier-node l2">${E(k2)}</span></li>`);
-          html+='</ul>';
-        }
-        html+='</li>';
-      });
-      html+='</ul>';
-    }
-    html+='</li>';
-  });
+  L[0].forEach(kw=>{ html+=`<li class="hier-item"><span class="hier-node l0">${E(kw)}</span>`; if(L[1]&&L[1].length){ html+='<ul class="hier-children">'; L[1].slice(0,4).forEach(k1=>{ html+=`<li class="hier-item"><span class="hier-node l1">${E(k1)}</span>`; if(L[2]&&L[2].length){ html+='<ul class="hier-children">'; L[2].slice(0,4).forEach(k2=>html+=`<li class="hier-item"><span class="hier-node l2">${E(k2)}</span></li>`); html+='</ul>'; } html+='</li>'; }); html+='</ul>'; } html+='</li>'; });
   html+='</ul>';
-  c.innerHTML=html;
+  $('hierOut').innerHTML=html;
 }
-
 function renderComparative(data){
   const c=$('compOut');
-  if(!data.compRows||!data.compRows.length){
-    c.innerHTML=`<div class="infobox">No hay suficientes coincidencias para el cuadro comparativo. Prueba con un texto más extenso.</div>`;
-    return;
-  }
-  let html=`<table class="comp-table">
-    <thead><tr>
-      <th style="width:18%">Concepto</th>
-      <th style="width:41%">Contexto A</th>
-      <th style="width:41%">Contexto B</th>
-    </tr></thead><tbody>`;
-  data.compRows.slice(0,12).forEach(row=>{
-    html+=`<tr>
-      <td class="concept-cell">${E(row.concepto)}</td>
-      <td>${E(row.a)}</td>
-      <td>${E(row.b)}</td>
-    </tr>`;
-  });
-  html+=`</tbody></table>`;
-  c.innerHTML=html;
+  if(!data.compRows||!data.compRows.length){ c.innerHTML='<div class="infobox">No hay suficientes coincidencias. Usa un texto más extenso.</div>'; return; }
+  c.innerHTML=`<table class="comp-table"><thead><tr><th style="width:18%">Concepto</th><th style="width:41%">Contexto A</th><th style="width:41%">Contexto B</th></tr></thead><tbody>${data.compRows.slice(0,12).map(row=>`<tr><td class="concept-cell">${E(row.concepto)}</td><td>${E(row.a)}</td><td>${E(row.b)}</td></tr>`).join('')}</tbody></table>`;
 }
-
 function renderIdeas(data){
-  const c=$('ideasOut');
-  c.innerHTML='';
-  data.ideas.forEach((s,i)=>{
-    const card=document.createElement('div');
-    card.className='idea-card';
-    card.innerHTML=`<div class="idea-num">${i+1}</div><div class="idea-text">${E(s)}</div>`;
-    c.appendChild(card);
-  });
+  const c=$('ideasOut'); c.innerHTML='';
+  data.ideas.forEach((s,i)=>{ const card=document.createElement('div'); card.className='idea-card'; card.innerHTML=`<div class="idea-num">${i+1}</div><div class="idea-text">${E(s)}</div>`; c.appendChild(card); });
 }
 
 // ════════════════════════════════════════════════════════
-// TECLADO
+// KEYBOARD SHORTCUTS
 // ════════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
   const tag=e.target.tagName;
@@ -2490,15 +2131,10 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Escape') stopSpeech();
 });
 
-// ════════════════════════════════════════════════════════
-// SERVICE WORKER
-// ════════════════════════════════════════════════════════
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
-}
+// Service Worker
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
-console.log('%c✦ STOICA READER v4.2 — Academic Edition — 100% gratuito',
-  'color:#5b8dee;font-family:monospace;font-weight:500;font-size:12px');
+console.log('%c✦ STOICA READER v4.3 — Academic Edition — Color System + NotebookLM Nav','color:#4f85e8;font-family:monospace;font-weight:500;font-size:12px');
 </script>
 </body>
 </html>
