@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   STOICA READER v4.3 — COLOR SYSTEM + NotebookLM NAVIGATION
+   STOICA READER v4.4 — KARAOKE HIGHLIGHT + VOICES CO/MX + CLEAN NAV
    ─────────────────────────────────────────────────────────────
    Color architecture:
    --c-bg, --c-surf, --c-surf2, --c-surf3   (surfaces)
@@ -512,10 +512,42 @@ header {
   font-weight: 400;
 }
 
-/* TTS highlights */
+/* TTS highlights — Karaoke style, high contrast, both themes */
 .w { display:inline; }
-.w.now { background:var(--c-hi-now); color:#fff; border-radius:3px; padding:0 2px; box-shadow:0 0 12px rgba(79,133,232,.3); }
-.w.done { background:var(--c-hi-done); border-radius:2px; }
+
+/* Word currently being spoken */
+.w.now {
+  background: var(--c-hi-now);
+  color: var(--c-hi-now-txt, #fff);
+  border-radius: 4px;
+  padding: 1px 3px;
+  margin: 0 -1px;
+  /* Subtle glow for clarity without fatigue */
+  box-shadow: 0 0 0 2px var(--c-hi-now-ring, rgba(79,133,232,.35));
+  transition: background .08s;
+  /* Ensure minimum contrast regardless of theme */
+  outline: none;
+}
+
+/* Words already spoken */
+.w.done {
+  background: var(--c-hi-done);
+  border-radius: 3px;
+  padding: 1px 2px;
+  margin: 0 -1px;
+}
+
+/* Dark theme karaoke tokens */
+:root {
+  --c-hi-now-txt:  #ffffff;
+  --c-hi-now-ring: rgba(79,133,232,.4);
+}
+/* Light theme karaoke tokens — swap to dark text on lighter bg */
+[data-theme=light] {
+  --c-hi-now-txt:  #ffffff;
+  --c-hi-now-ring: rgba(45,101,194,.35);
+}
+
 mark.hl { background:var(--c-hi); color:var(--c-txt); border-radius:2px; padding:0 1px; border-bottom:1.5px solid var(--c-hi-bdr); }
 mark.find { background:rgba(201,166,74,.3); color:var(--c-txt); border-radius:2px; }
 mark.find.cur { background:var(--c-amber); color:#fff; }
@@ -761,7 +793,7 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
     <div class="logo">
       STOICA <span class="sep">|</span>
       <span class="sub">Reader</span>
-      <span class="badge-v">v4.3</span>
+      <span class="badge-v">v4.4</span>
     </div>
   </div>
   <div class="hdr-r">
@@ -840,7 +872,7 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
   ═══════════════════════════════════╗ -->
   <nav class="nav-sidebar" id="navSidebar">
 
-    <!-- GROUP: LECTOR -->
+    <!-- GROUP: CONTENIDO -->
     <div class="nav-group">
       <div class="nav-group-label">Contenido</div>
       <button class="nav-item on" data-view="reader">
@@ -849,9 +881,6 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
       <button class="nav-item" data-view="notes">
         <span class="nav-icon">📝</span> Mis Notas
         <span class="nav-badge" id="notesBadge">0</span>
-      </button>
-      <button class="nav-item" data-view="voices">
-        <span class="nav-icon">🎙</span> Configurar Voz
       </button>
     </div>
 
@@ -864,9 +893,6 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
       <button class="nav-item" data-view="questions">
         <span class="nav-icon">❓</span> Preguntas
       </button>
-      <button class="nav-item" data-view="tools">
-        <span class="nav-icon">🔬</span> Mapa conceptual
-      </button>
     </div>
 
     <!-- GROUP: UTILIDADES -->
@@ -874,6 +900,9 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
       <div class="nav-group-label">Utilidades</div>
       <button class="nav-item" data-view="translate">
         <span class="nav-icon">🌐</span> Traducción
+      </button>
+      <button class="nav-item" data-view="voices">
+        <span class="nav-icon">🎙</span> Configurar Voz
       </button>
     </div>
 
@@ -1012,36 +1041,6 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
       </div>
     </div>
 
-    <!-- ══ VIEW: HERRAMIENTAS / MAPA ══════════════════ -->
-    <div class="tpane" id="tab-tools">
-      <div class="pinner">
-        <div class="phead">
-          <h2>🔬 Mapa conceptual</h2>
-          <p>Análisis TF-IDF del texto: mapa mental, jerarquía, cuadro comparativo e ideas clave.</p>
-          <button class="btn pri" id="bGenAll">✨ Analizar texto</button>
-        </div>
-        <div class="infobox">✅ Análisis <b>sin internet</b> mediante TF-IDF local.</div>
-        <div class="tool-tabs" id="toolTabsBar">
-          <button class="tool-tab on" data-tpane="tp-map">🗺 Mapa mental</button>
-          <button class="tool-tab"    data-tpane="tp-hier">🏗 Jerarquía</button>
-          <button class="tool-tab"    data-tpane="tp-comp">⚖️ Comparativo</button>
-          <button class="tool-tab"    data-tpane="tp-ideas">💡 Ideas clave</button>
-        </div>
-        <div class="tool-pane on" id="tp-map">
-          <div class="mm-canvas" id="mmOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">Pulsa "✨ Analizar texto" para generar el mapa mental.</span></div>
-        </div>
-        <div class="tool-pane" id="tp-hier">
-          <div class="hier-wrap" id="hierOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">La jerarquía conceptual aparecerá aquí.</span></div>
-        </div>
-        <div class="tool-pane" id="tp-comp">
-          <div class="comp-wrap"><div id="compOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">El cuadro comparativo aparecerá aquí.</span></div></div>
-        </div>
-        <div class="tool-pane" id="tp-ideas">
-          <div class="idea-list" id="ideasOut"><span style="font-family:var(--fMono);font-size:.68rem;color:var(--c-muted)">Las ideas clave aparecerán aquí.</span></div>
-        </div>
-      </div>
-    </div>
-
     <!-- ══ VIEW: TRADUCCIÓN ══════════════════ -->
     <div class="tpane" id="tab-translate">
       <div class="pinner" style="height:100%">
@@ -1104,9 +1103,13 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
   <div class="modal">
     <div class="modal-title">📋 Pegar texto</div>
     <textarea id="pasteA" placeholder="Pega aquí tu texto…"></textarea>
+    <div class="infobox" style="font-size:.7rem">
+      <b>Resaltado sincronizado:</b> El texto cargado se destacará palabra por palabra (estilo karaoke) al reproducir — igual que con archivos.
+    </div>
     <div class="mfooter">
       <button class="btn g"   id="bCancelP">Cancelar</button>
-      <button class="btn pri" id="bConfP">Cargar texto ›</button>
+      <button class="btn g"   id="bConfP">Cargar texto</button>
+      <button class="btn pri" id="bConfPRead">▶ Cargar y leer</button>
     </div>
   </div>
 </div>
@@ -1175,7 +1178,13 @@ input[type=color] { width:36px; height:28px; padding:2px 3px; cursor:pointer; bo
 
 <script>
 /* ═══════════════════════════════════════════════════════════════
-   STOICA READER v4.3 — COLOR SYSTEM + NotebookLM NAVIGATION
+   STOICA READER v4.4
+   ─────────────────────────────────────────────────────────────
+   v4.4 changes:
+   • Nav: Mapa eliminado, Voces → Utilidades
+   • Karaoke: rediseño visual accesible, anillo de contraste
+   • Voces: CO primero, luego MX, AR, español, resto
+   • Pegar texto: botón "Cargar y leer" con highlight inmediato
 ═══════════════════════════════════════════════════════════════ */
 
 const $ = id => document.getElementById(id);
@@ -1209,7 +1218,6 @@ let mediaRec=null, recChunks=[], recording=false;
 let keepTimer=null;
 let srchMatches=[], srchIdx=0;
 let lastQs=[];
-let lastMapData=null;
 
 // ── PDF.js ────────────────────────────────────────────
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -1600,7 +1608,21 @@ function parseZip(bytes){
 
 $('bPaste').onclick=()=>{ $('pasteOv').classList.add('on'); $('pasteA').focus(); };
 $('bCancelP').onclick=()=>{ $('pasteOv').classList.remove('on'); $('pasteA').value=''; };
-$('bConfP').onclick=()=>{ const t=$('pasteA').value.trim(); if(t) loadText(t,'Texto pegado'); $('pasteOv').classList.remove('on'); $('pasteA').value=''; };
+$('bConfP').onclick=()=>{
+  const t=$('pasteA').value.trim();
+  if(t){ loadText(t,'Texto pegado'); goView('reader'); }
+  $('pasteOv').classList.remove('on'); $('pasteA').value='';
+};
+$('bConfPRead').onclick=()=>{
+  const t=$('pasteA').value.trim();
+  if(t){
+    loadText(t,'Texto pegado');
+    goView('reader');
+    // Small delay so spans are ready, then start reading
+    setTimeout(()=>{ if(!playing) togglePlay(); }, 180);
+  }
+  $('pasteOv').classList.remove('on'); $('pasteA').value='';
+};
 $('pasteOv').onclick=e=>{ if(e.target===$('pasteOv')) $('bCancelP').click(); };
 
 // ════════════════════════════════════════════════════════
@@ -1706,21 +1728,56 @@ function highlightSearchCurrent(){
 
 // ════════════════════════════════════════════════════════
 // VOICES — Web Speech API
+// Priority: es-CO → es-MX → es-AR → any Spanish → rest
+// Spanish voices pinned to top of grid
 // ════════════════════════════════════════════════════════
 function loadVoices(){
   voices=synth.getVoices();
   if(!voices.length) return;
   const sel=$('voiceSel'); sel.innerHTML='';
-  let defaultIdx=0;
-  voices.forEach((v,i)=>{
-    const o=document.createElement('option');
-    o.value=i; o.textContent=`${v.name} (${v.lang})`;
-    sel.appendChild(o);
-    const vn=v.name.toLowerCase(); const vl=v.lang.toLowerCase();
-    if((vl==='es-us'&&vn.includes('google'))||(vl.startsWith('es')&&vn.includes('google')&&(vn.includes('estados unidos')||vn.includes('united states')||vl==='es-us'))) defaultIdx=i;
+
+  // ── Sort: Spanish-CO first, then all Spanish, then rest ──
+  const sorted=[...voices].map((v,origIdx)=>({v,origIdx})).sort((a,b)=>{
+    const aES=a.v.lang.toLowerCase().startsWith('es');
+    const bES=b.v.lang.toLowerCase().startsWith('es');
+    const aCO=a.v.lang.toLowerCase()==='es-co';
+    const bCO=b.v.lang.toLowerCase()==='es-co';
+    const aMX=a.v.lang.toLowerCase()==='es-mx';
+    const bMX=b.v.lang.toLowerCase()==='es-mx';
+    const aAR=a.v.lang.toLowerCase()==='es-ar';
+    const bAR=b.v.lang.toLowerCase()==='es-ar';
+    if(aCO&&!bCO) return -1; if(bCO&&!aCO) return 1;
+    if(aMX&&!bMX&&!bCO) return -1; if(bMX&&!aMX&&!aCO) return 1;
+    if(aAR&&!bAR&&!bCO&&!bMX) return -1; if(bAR&&!aAR&&!aCO&&!aMX) return 1;
+    if(aES&&!bES) return -1; if(bES&&!aES) return 1;
+    return 0;
   });
-  if(defaultIdx===0) voices.forEach((v,i)=>{ if(v.lang.startsWith('es')&&defaultIdx===0) defaultIdx=i; });
-  sel.value=defaultIdx;
+
+  // Build select with sorted voices; map sorted index → original index
+  const sortedOrigIdx=[];
+  sorted.forEach(({v,origIdx},si)=>{
+    const o=document.createElement('option');
+    o.value=origIdx;
+    const langUpper=v.lang.toUpperCase();
+    o.textContent=`${v.name} (${langUpper})`;
+    sel.appendChild(o);
+    sortedOrigIdx.push(origIdx);
+  });
+
+  // ── Default voice detection: CO → MX → AR → any ES ──
+  let defaultOrigIdx=null;
+  // 1. Spanish Colombia
+  for(const {v,origIdx} of sorted){ if(v.lang.toLowerCase()==='es-co'){ defaultOrigIdx=origIdx; break; } }
+  // 2. Spanish Mexico
+  if(defaultOrigIdx===null){ for(const {v,origIdx} of sorted){ if(v.lang.toLowerCase()==='es-mx'){ defaultOrigIdx=origIdx; break; } } }
+  // 3. Spanish Argentina
+  if(defaultOrigIdx===null){ for(const {v,origIdx} of sorted){ if(v.lang.toLowerCase()==='es-ar'){ defaultOrigIdx=origIdx; break; } } }
+  // 4. Any Spanish
+  if(defaultOrigIdx===null){ for(const {v,origIdx} of sorted){ if(v.lang.toLowerCase().startsWith('es')){ defaultOrigIdx=origIdx; break; } } }
+  // 5. First voice
+  if(defaultOrigIdx===null&&voices.length>0) defaultOrigIdx=0;
+
+  sel.value=String(defaultOrigIdx);
   renderVoiceGrid();
 }
 loadVoices();
@@ -1729,34 +1786,70 @@ if(speechSynthesis.onvoiceschanged!==undefined) speechSynthesis.onvoiceschanged=
 function renderVoiceGrid(){
   const filter=$('vLangFilter').value;
   const grid=$('voiceGrid'); grid.innerHTML='';
-  const curIdx=parseInt($('voiceSel').value)||0;
-  const filtered=voices.map((v,i)=>({v,i})).filter(({v})=>!filter||v.lang.startsWith(filter));
+  const curIdx=parseInt($('voiceSel').value);
+
+  // Rebuild sorted list for display (same sort as loadVoices)
+  const sorted=[...voices].map((v,origIdx)=>({v,origIdx})).sort((a,b)=>{
+    const aES=a.v.lang.toLowerCase().startsWith('es');
+    const bES=b.v.lang.toLowerCase().startsWith('es');
+    const aCO=a.v.lang.toLowerCase()==='es-co';
+    const bCO=b.v.lang.toLowerCase()==='es-co';
+    const aMX=a.v.lang.toLowerCase()==='es-mx';
+    const bMX=b.v.lang.toLowerCase()==='es-mx';
+    const aAR=a.v.lang.toLowerCase()==='es-ar';
+    const bAR=b.v.lang.toLowerCase()==='es-ar';
+    if(aCO&&!bCO) return -1; if(bCO&&!aCO) return 1;
+    if(aMX&&!bMX&&!bCO) return -1; if(bMX&&!aMX&&!aCO) return 1;
+    if(aAR&&!bAR&&!bCO&&!bMX) return -1; if(bAR&&!aAR&&!aCO&&!aMX) return 1;
+    if(aES&&!bES) return -1; if(bES&&!aES) return 1;
+    return 0;
+  });
+
+  const filtered=sorted.filter(({v})=>!filter||v.lang.toLowerCase().startsWith(filter));
   $('vCount').textContent=`${filtered.length} voz${filtered.length!==1?'es':''}`;
-  filtered.forEach(({v,i})=>{
+
+  filtered.forEach(({v,origIdx})=>{
     const card=document.createElement('div');
-    card.className='vcard'+(i===curIdx?' sel':'');
-    const lc=v.lang.split('-')[0].toLowerCase();
-    const tagCls=lc==='es'?'es':lc==='en'?'en':'';
+    const isActive=origIdx===curIdx;
+    card.className='vcard'+(isActive?' sel':'');
+
+    const vl=v.lang.toLowerCase();
+    const lc=vl.split('-')[0];
+    const regionCode=vl.split('-')[1]||'';
+    let tagCls=''; let regionLabel='';
+    if(lc==='es'){ tagCls='es'; regionLabel=regionCode.toUpperCase(); }
+    else if(lc==='en'){ tagCls='en'; regionLabel=regionCode.toUpperCase(); }
+
+    // Special badge for Colombian voice
+    const isCO=vl==='es-co';
+    const isMX=vl==='es-mx';
+    const isAR=vl==='es-ar';
+    let specialBadge='';
+    if(isCO) specialBadge=`<span class="vtag" style="color:#f5a623;border-color:rgba(245,166,35,.45);background:rgba(245,166,35,.12)">🇨🇴 Colombia</span>`;
+    else if(isMX) specialBadge=`<span class="vtag" style="color:#4caf50;border-color:rgba(76,175,80,.4);background:rgba(76,175,80,.1)">🇲🇽 México</span>`;
+    else if(isAR) specialBadge=`<span class="vtag" style="color:#64b5f6;border-color:rgba(100,181,246,.4);background:rgba(100,181,246,.1)">🇦🇷 Argentina</span>`;
+
     card.innerHTML=`
       <div class="vname">${E(v.name)}</div>
-      <div class="vlang">${E(v.lang)}</div>
-      <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:2px">
-        <span class="vtag ${tagCls}">${E(v.lang)}</span>
+      <div class="vlang">${E(v.lang.toUpperCase())}</div>
+      <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:4px">
+        ${tagCls?`<span class="vtag ${tagCls}">${lc.toUpperCase()}${regionLabel?' – '+regionLabel:''}</span>`:''}
+        ${specialBadge}
         ${v.localService?'<span class="vtag" style="color:var(--c-teal);border-color:rgba(60,191,168,.35)">Local</span>':''}
-        ${i===curIdx?'<span class="vtag star">★ Activa</span>':''}
-        <button class="btn g" style="margin-left:auto;padding:2px 7px;font-size:.55rem" onclick="previewVoice(${i})">▶</button>
+        ${isActive?'<span class="vtag star">★ Activa</span>':''}
+        <button class="btn g" style="margin-left:auto;padding:2px 7px;font-size:.55rem" onclick="previewVoice(${origIdx})">▶</button>
       </div>`;
-    card.onclick=e=>{ if(e.target.tagName==='BUTTON') return; selectVoice(i); };
+    card.onclick=e=>{ if(e.target.tagName==='BUTTON') return; selectVoice(origIdx); };
     grid.appendChild(card);
   });
 }
-window.selectVoice=function(i){ $('voiceSel').value=i; renderVoiceGrid(); toast(`✓ Voz: ${voices[i]?.name}`); };
-window.previewVoice=function(i){
-  const txt=$('previewTxt').value.trim()||'Esta es una prueba de voz. Stoica Reader, herramienta académica.';
+window.selectVoice=function(origIdx){ $('voiceSel').value=String(origIdx); renderVoiceGrid(); toast(`✓ Voz: ${voices[origIdx]?.name}`); };
+window.previewVoice=function(origIdx){
+  const txt=$('previewTxt').value.trim()||'Hola, esta es una prueba de voz. Stoica Reader, herramienta académica colombiana.';
   const u=new SpeechSynthesisUtterance(txt);
-  if(voices[i]) u.voice=voices[i];
+  if(voices[origIdx]) u.voice=voices[origIdx];
   u.rate=parseFloat($('rRate').value); u.pitch=parseFloat($('rPitch').value); u.volume=parseFloat($('rVol').value);
-  synth.cancel(); synth.speak(u); toast(`▶ ${voices[i]?.name}`);
+  synth.cancel(); synth.speak(u); toast(`▶ ${voices[origIdx]?.name}`);
 };
 $('vLangFilter').onchange=renderVoiceGrid;
 $('bRefreshVoices').onclick=()=>{ loadVoices(); toast('✓ Voces actualizadas'); };
@@ -1770,7 +1863,7 @@ $('rVol').oninput=()=>$('vV').textContent=Math.round(parseFloat($('rVol').value)
 function makeUtt(text){
   const u=new SpeechSynthesisUtterance(text);
   u.rate=parseFloat($('rRate').value); u.pitch=parseFloat($('rPitch').value); u.volume=parseFloat($('rVol').value);
-  const vi=parseInt($('voiceSel').value);
+  const vi=parseInt($('voiceSel').value); // This is the original (unsorted) voice index
   if(voices[vi]) u.voice=voices[vi];
   u.onstart=()=>{ playing=true; paused=false; $('bPlay').textContent='⏸'; $('fc-p').textContent='⏸'; $('statPill').textContent='▶ Reproduciendo'; $('statPill').className='pill play'; };
   u.onpause=()=>{ paused=true; $('bPlay').textContent='▶'; $('fc-p').textContent='▶'; $('statPill').textContent='⏸ Pausado'; $('statPill').className='pill pause'; };
@@ -2070,56 +2163,6 @@ function crc32(data){
   return (crc^0xFFFFFFFF)>>>0;
 }
 
-// ════════════════════════════════════════════════════════
-// CONCEPTUAL MAP — Tools
-// ════════════════════════════════════════════════════════
-function genMapData(text){
-  const freq=tfidf(text);
-  const sorted=Object.entries(freq).filter(([w])=>w.length>3).sort((a,b)=>b[1]-a[1]);
-  if(!sorted.length) return null;
-  const central=sorted[0][0];
-  const rest=sorted.slice(1,41).map(e=>e[0]);
-  const GROUPS=[
-    {name:'Conceptos principales',color:'var(--c-pri)',light:'var(--c-pri-dim)'},
-    {name:'Términos clave',color:'var(--c-teal)',light:'var(--c-teal-dim)'},
-    {name:'Ideas secundarias',color:'var(--c-sec)',light:'var(--c-sec-dim)'},
-    {name:'Contexto',color:'var(--c-amber)',light:'rgba(217,125,58,.1)'},
-    {name:'Detalles',color:'#8b78d4',light:'rgba(139,120,212,.1)'},
-    {name:'Ampliación',color:'#4fa8a8',light:'rgba(79,168,168,.1)'},
-  ];
-  const N=6; const branches=[];
-  for(let i=0;i<rest.length;i+=N){ const chunk=rest.slice(i,i+N); if(chunk.length) branches.push({...GROUPS[Math.floor(i/N)%GROUPS.length],conceptos:chunk}); }
-  const sentences=(text.match(/[^.!?]+[.!?]*/g)||[]).map(s=>s.trim()).filter(s=>s.length>25);
-  const scoredS=scoreSentences(sentences,freq).sort((a,b)=>b.score-a.score).slice(0,10);
-  const hierLevels=[sorted.slice(0,4).map(e=>e[0]),sorted.slice(4,12).map(e=>e[0]),sorted.slice(12,28).map(e=>e[0])];
-  const compRows=[];
-  sorted.slice(0,10).map(e=>e[0]).forEach(kw=>{
-    const matching=sentences.filter(s=>s.toLowerCase().includes(kw)).slice(0,2);
-    if(matching.length>=2) compRows.push({concepto:kw,a:summarizeSentence(matching[0]),b:summarizeSentence(matching[1])});
-  });
-  return {central,branches,ideas:scoredS.map(x=>x.s),hierLevels,compRows};
-}
-$('bGenAll').onclick=()=>{ if(!fullText){ toast('Carga texto primero.'); return; } load(30); setTimeout(()=>{ const data=genMapData(fullText); load(100); if(!data){ $('mmOut').textContent='Texto muy corto.'; return; } lastMapData=data; renderMindMap(data); renderHierarchy(data); renderComparative(data); renderIdeas(data); toast('✓ Mapa conceptual generado'); },150); };
-
-function renderMindMap(data){
-  $('mmOut').innerHTML=`<div style="display:flex;flex-direction:column;align-items:center;gap:18px;width:100%"><div style="text-align:center"><span class="mm-center">${E(data.central)}</span></div><div class="mm-grid">${data.branches.map(b=>`<div class="mm-branch" style="border-top:3px solid ${b.color};background:${b.light||'var(--c-surf2)'}"><div class="mm-branch-title" style="color:${b.color}">${E(b.name)}</div><div class="mm-chips">${b.conceptos.map(c=>`<span class="mm-chip">${E(c)}</span>`).join('')}</div></div>`).join('')}</div></div>`;
-}
-function renderHierarchy(data){
-  const L=data.hierLevels;
-  let html='<ul class="hier-root">';
-  L[0].forEach(kw=>{ html+=`<li class="hier-item"><span class="hier-node l0">${E(kw)}</span>`; if(L[1]&&L[1].length){ html+='<ul class="hier-children">'; L[1].slice(0,4).forEach(k1=>{ html+=`<li class="hier-item"><span class="hier-node l1">${E(k1)}</span>`; if(L[2]&&L[2].length){ html+='<ul class="hier-children">'; L[2].slice(0,4).forEach(k2=>html+=`<li class="hier-item"><span class="hier-node l2">${E(k2)}</span></li>`); html+='</ul>'; } html+='</li>'; }); html+='</ul>'; } html+='</li>'; });
-  html+='</ul>';
-  $('hierOut').innerHTML=html;
-}
-function renderComparative(data){
-  const c=$('compOut');
-  if(!data.compRows||!data.compRows.length){ c.innerHTML='<div class="infobox">No hay suficientes coincidencias. Usa un texto más extenso.</div>'; return; }
-  c.innerHTML=`<table class="comp-table"><thead><tr><th style="width:18%">Concepto</th><th style="width:41%">Contexto A</th><th style="width:41%">Contexto B</th></tr></thead><tbody>${data.compRows.slice(0,12).map(row=>`<tr><td class="concept-cell">${E(row.concepto)}</td><td>${E(row.a)}</td><td>${E(row.b)}</td></tr>`).join('')}</tbody></table>`;
-}
-function renderIdeas(data){
-  const c=$('ideasOut'); c.innerHTML='';
-  data.ideas.forEach((s,i)=>{ const card=document.createElement('div'); card.className='idea-card'; card.innerHTML=`<div class="idea-num">${i+1}</div><div class="idea-text">${E(s)}</div>`; c.appendChild(card); });
-}
 
 // ════════════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
@@ -2134,7 +2177,7 @@ document.addEventListener('keydown',e=>{
 // Service Worker
 if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
-console.log('%c✦ STOICA READER v4.3 — Academic Edition — Color System + NotebookLM Nav','color:#4f85e8;font-family:monospace;font-weight:500;font-size:12px');
+console.log('%c✦ STOICA READER v4.4 — Karaoke · Voces CO/MX · Nav limpia','color:#4f85e8;font-family:monospace;font-weight:500;font-size:12px');
 </script>
 </body>
 </html>
