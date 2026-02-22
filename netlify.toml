@@ -1,6 +1,8 @@
+# Stoica Reader — Netlify config
+# No backend needed — 100% frontend
+
 [build]
   publish = "."
-  functions = "netlify/functions"
 
 [[headers]]
   for = "/index.html"
@@ -13,8 +15,11 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
-  for = "/.netlify/functions/*"
+  for = "/*.js"
   [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type"
-    Access-Control-Allow-Methods = "POST, OPTIONS"
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

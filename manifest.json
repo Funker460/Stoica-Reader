@@ -1,11 +1,11 @@
 {
   "name": "Stoica Reader",
   "short_name": "Stoica",
-  "description": "Lector inteligente con voz, traducción, resúmenes y análisis",
+  "description": "Lector personal inteligente — 100% gratuito, sin APIs de pago",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f0e17",
-  "theme_color": "#0f0e17",
+  "background_color": "#1a1410",
+  "theme_color": "#1a1410",
   "orientation": "any",
   "icons": [
     { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },

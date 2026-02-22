@@ -1,9 +1,10 @@
-const CACHE = 'stoica-v3-1';
+/* Stoica Reader — Service Worker */
+const V = 'stoica-free-1';
 const CORE = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c =>
+    caches.open(V).then(c =>
       Promise.allSettled(CORE.map(url => c.add(url).catch(() => {})))
     )
   );
@@ -13,7 +14,7 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== V).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
@@ -21,30 +22,37 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = e.request.url;
-  // Don't cache API calls or Netlify functions
-  if (url.includes('/.netlify/') || url.includes('api.anthropic.com')) {
-    e.respondWith(fetch(e.request));
+
+  // Never cache API calls or translation requests
+  if (url.includes('mymemory.translated.net') ||
+      url.includes('api.anthropic.com') ||
+      url.includes('/.netlify/')) {
+    e.respondWith(fetch(e.request).catch(() => new Response('Offline', {status: 503})));
     return;
   }
-  // For CDN resources: network first, cache fallback
+
+  // CDN resources: network first, cache fallback
   if (!url.startsWith(self.location.origin)) {
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(V).then(c => c.put(e.request, clone));
+          }
           return res;
         })
         .catch(() => caches.match(e.request))
     );
     return;
   }
-  // Local: stale-while-revalidate
+
+  // Local files: cache first, network fallback
   e.respondWith(
-    caches.open(CACHE).then(c =>
+    caches.open(V).then(c =>
       c.match(e.request).then(cached => {
         const fresh = fetch(e.request).then(res => {
-          c.put(e.request, res.clone());
+          if (res.ok) c.put(e.request, res.clone());
           return res;
         });
         return cached || fresh;
